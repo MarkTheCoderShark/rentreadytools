@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+:root {
+  --rr-hero-bg: #0d3a3c;
+  --rr-hero-bg-secondary: #1a2c2e;
+  --rr-hero-jade: #2a8a83;
+  --rr-hero-deepgreen: #0f615e;
+  --rr-hero-highlight: #f4f7f7;
+
+  --rr-accent-gold: #e8c078;
+  --rr-accent-darkteal: #0c4a47;
+  --rr-status-alert: #d56b2e;
+  --rr-status-success: #27ae60;
+
+  --rr-surface-white: #ffffff;
+  --rr-surface-offwhite: #f7f5f0;
+  --rr-surface-softgray: #f3f3f2;
+  --rr-border-gray: #dfe3e2;
+  --rr-text-primary: #2c3e50;
+  --rr-label-tan: #d9cbb3;
+
+  --rr-tool-teal: #0f7c78;
+  --rr-tool-darkteal: #0b5956;
+
+  --rr-rent-peach: #f3d7bd;
+  --rr-rent-border: #eadac4;
+  --rr-rent-grad-start: #f7efe6;
+  --rr-rent-grad-end: #f4f0eb;
+
+  --rr-pm-bg: #0e3c40;
+  --rr-pm-card-bg: #f3f6f7;
+  --rr-pm-border: #cbd4d6;
+
+  --rr-bottomcta-bg: #0b4f4d;
+  --rr-bottomcta-gold: #e9b060;
+  --rr-bottomcta-border: #f5e8c9;
+}
+
+@theme inline {
+  --color-background: var(--rr-surface-offwhite);
+  --color-foreground: var(--rr-text-primary);
+
+  --color-rr-hero-bg: var(--rr-hero-bg);
+  --color-rr-hero-bg-secondary: var(--rr-hero-bg-secondary);
+  --color-rr-hero-jade: var(--rr-hero-jade);
+  --color-rr-hero-deepgreen: var(--rr-hero-deepgreen);
+  --color-rr-hero-highlight: var(--rr-hero-highlight);
+
+  --color-rr-accent-gold: var(--rr-accent-gold);
+  --color-rr-accent-darkteal: var(--rr-accent-darkteal);
+  --color-rr-status-alert: var(--rr-status-alert);
+  --color-rr-status-success: var(--rr-status-success);
+
+  --color-rr-surface-white: var(--rr-surface-white);
+  --color-rr-surface-offwhite: var(--rr-surface-offwhite);
+  --color-rr-surface-softgray: var(--rr-surface-softgray);
+  --color-rr-border-gray: var(--rr-border-gray);
+  --color-rr-text-primary: var(--rr-text-primary);
+  --color-rr-label-tan: var(--rr-label-tan);
+
+  --color-rr-tool-teal: var(--rr-tool-teal);
+  --color-rr-tool-darkteal: var(--rr-tool-darkteal);
+
+  --color-rr-rent-peach: var(--rr-rent-peach);
+  --color-rr-rent-border: var(--rr-rent-border);
+  --color-rr-rent-grad-start: var(--rr-rent-grad-start);
+  --color-rr-rent-grad-end: var(--rr-rent-grad-end);
+
+  --color-rr-pm-bg: var(--rr-pm-bg);
+  --color-rr-pm-card-bg: var(--rr-pm-card-bg);
+  --color-rr-pm-border: var(--rr-pm-border);
+
+  --color-rr-bottomcta-bg: var(--rr-bottomcta-bg);
+  --color-rr-bottomcta-gold: var(--rr-bottomcta-gold);
+  --color-rr-bottomcta-border: var(--rr-bottomcta-border);
+
+  --shadow-card: 0 22px 60px -35px rgba(12, 74, 71, 0.2);
+  --shadow-soft: 0 12px 26px -18px rgba(12, 74, 71, 0.18);
+  --radius-card: 1.25rem;
+  --radius-pill: 999px;
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--rr-surface-offwhite);
+  color: var(--rr-text-primary);
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: rgba(232, 192, 120, 0.28);
+}
