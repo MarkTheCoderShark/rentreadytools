@@ -42,13 +42,13 @@ export async function POST(request: Request) {
     }
 
     const params = new URLSearchParams({
-      limit: "50",
+      limit: "30",
       offset: "0",
-      sort: "recently_added_update",
+      sort: "lowest_price",
       city: location.city,
       state_code: location.state_code,
-      postal_code: location.postal_code,
-      expand_search_radius: "5",
+      location: location.postal_code,
+      expand_search_radius: "25",
     });
 
     if (beds > 0) {
