@@ -58,7 +58,7 @@ const initialInputs: Inputs = {
   baths: 2,
   sqft: 1450,
   parking: true,
-  condition: 4,
+  condition: 3,
   currentRent: 2150,
 };
 
