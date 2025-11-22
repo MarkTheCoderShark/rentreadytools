@@ -119,6 +119,7 @@ export default function RentPricingPage() {
     const compCount = apiEstimate.data?.compsCount ?? 0;
     const compRentPerSqft = apiEstimate.data?.medianRentPerSqft ?? 0;
     const compRent = apiEstimate.data?.medianRent ?? 0;
+    const zestimate = apiEstimate.data?.currentRentZestimate;
 
     const compEstimate =
       inputs.sqft && compRentPerSqft
@@ -130,7 +131,12 @@ export default function RentPricingPage() {
     let rangeUpper = heuristic.upper;
     let note = "Heuristic estimate";
 
-    if (compCount >= 10 && compEstimate > 0) {
+    if (zestimate && zestimate > 0) {
+      suggested = Math.round(zestimate);
+      rangeLower = Math.round(zestimate * 0.97);
+      rangeUpper = Math.round(zestimate * 1.03);
+      note = "Zillow rent estimate";
+    } else if (compCount >= 10 && compEstimate > 0) {
       const blendedMid = 0.7 * compEstimate + 0.3 * heuristic.suggested;
       const adjMid = blendedMid * heuristic.conditionFactor;
       suggested = Math.round(adjMid);
@@ -448,6 +454,7 @@ function CompMeta({
 }) {
   const compsCount = results.comps?.compsCount ?? 0;
   const medianRent = results.comps?.medianRent ?? 0;
+  const zestimate = results.comps?.currentRentZestimate;
   if (results.note === "Heuristic estimate" && compsCount === 0) {
     return <p className="text-xs text-rr-text-primary/65">Using heuristic estimate (no live comps yet).</p>;
   }
@@ -457,7 +464,9 @@ function CompMeta({
         {results.note || "Estimate source"}
       </p>
       <p>
-        {compsCount > 0
+        {zestimate
+          ? `Zillow rent estimate: ${formatCurrency(zestimate)}`
+          : compsCount > 0
           ? `Comps: ${compsCount} found. Median rent ${formatCurrency(medianRent)}.`
           : "Fetching live comps..."}
       </p>
