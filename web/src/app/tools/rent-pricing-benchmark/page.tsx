@@ -170,6 +170,7 @@ export default function RentPricingPage() {
       competition,
       note,
       comps: apiEstimate.data,
+      conditionFactor: heuristic.conditionFactor,
     };
   }, [apiEstimate, heuristic, inputs.currentRent, inputs.sqft]);
 
