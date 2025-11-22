@@ -488,7 +488,7 @@ function AssumptionPill({ label, onClick }: { label: string; onClick: () => void
   );
 }
 
-function focusRefine(ref: RefObject<HTMLDivElement>, setOpen: (state: boolean) => void) {
+function focusRefine(ref: RefObject<HTMLDivElement | null>, setOpen: (state: boolean) => void) {
   setOpen(true);
   if (ref.current) {
     ref.current.scrollIntoView({ behavior: "smooth", block: "start" });

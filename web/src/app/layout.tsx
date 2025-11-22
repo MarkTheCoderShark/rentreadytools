@@ -70,9 +70,12 @@ function Footer() {
           title="Guides & Forms"
           links={[
             { label: "Turnover hub", href: "/turnover" },
+            { label: "Turnover guide", href: "/turnover/guide" },
             { label: "Rent pricing hub", href: "/rent-pricing" },
             { label: "Landlord forms", href: "/landlord-forms" },
+            { label: "Notice to enter", href: "/landlord-forms/notice-to-enter-generator" },
             { label: "Move-out checklist", href: "/landlord-forms/move-out-checklist" },
+            { label: "Move-in checklist", href: "/landlord-forms/move-in-checklist" },
           ]}
         />
         <FooterColumn

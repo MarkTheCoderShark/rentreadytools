@@ -8,6 +8,7 @@ const links = [
   { label: "Turnover Guides", href: "/turnover" },
   { label: "Rent Pricing Guides", href: "/rent-pricing" },
   { label: "Forms & Templates", href: "/landlord-forms" },
+  { label: "Turnover Guide", href: "/turnover/guide" },
 ];
 
 export default function NavBar() {
