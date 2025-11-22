@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import FormSection from "./form-section";
+import ScrollButton from "./scroll-button";
 
 export const metadata: Metadata = {
-  title: "Property Management for DIY Landlords | RentReadyTools",
+  title: "Property Management for Landlords | Free Rental Analysis",
   description:
-    "Turnovers, leasing, and rent collection handled for you. Property management that blends calculators, checklists, and a transparent team.",
+    "Get a free rental analysis with a data-backed rent estimate, vacancy risk check, and turnover plan. Full-service property management for landlords.",
 };
 
 const services = [
@@ -14,15 +16,15 @@ const services = [
   },
   {
     title: "Turnovers & maintenance",
-    detail: "Pre-scheduled cleaners/maintenance, documented before/after photos, and vendor coordination with timelines.",
+    detail: "Pre-scheduled cleaners/repairs, before-after photo proof, and vendor timelines you can track.",
   },
   {
     title: "Resident care & renewals",
-    detail: "Responsive communication, deposit protection, and renewal plans sent 60–90 days before lease end.",
+    detail: "Fast communication, deposit protection, and renewal plans sent 60–90 days before lease end.",
   },
   {
     title: "Transparent reporting",
-    detail: "Clear monthly statements, vacancy cost tracking, and upgrade ROI plans when you want to reinvest.",
+    detail: "Clear monthly statements, vacancy cost tracking, and ROI plans for upgrades.",
   },
 ];
 
@@ -39,13 +41,13 @@ export default function PropertyManagementPage() {
       <section className="overflow-hidden rounded-[1.4rem] border border-rr-border-gray bg-rr-surface-white shadow-[var(--shadow-card)]">
         <div className="relative grid gap-8 p-8 md:grid-cols-[1.1fr_0.9fr] md:p-12">
           <div className="space-y-6">
-            <Eyebrow>Property management</Eyebrow>
+            <Eyebrow>PROPERTY MANAGEMENT</Eyebrow>
             <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
-              Pricing clarity, fast turnovers, and residents who stay longer.
+              Get a free rental analysis — then decide if you want us to run it for you.
             </h1>
             <p className="max-w-2xl text-sm leading-relaxed text-rr-text-primary/80">
-              We run the same calculators and checklists from this site—but we do the work for you. Expect responsive
-              communication, photo proof, and clear reporting.
+              We’ll review your rent price, vacancy risk, and turnover costs using the same tools on this site. You’ll get a
+              clear, data-backed plan within 1 business day — no obligation.
             </p>
             <div className="flex flex-wrap gap-2 text-xs font-semibold text-rr-text-primary/70">
               <Badge>Rent pricing</Badge>
@@ -53,20 +55,21 @@ export default function PropertyManagementPage() {
               <Badge>Turnover</Badge>
               <Badge>Maintenance</Badge>
             </div>
+            <p className="text-sm font-semibold text-rr-text-primary/75">
+              Full-service management focused on accurate pricing, low vacancy, and smooth turns.
+            </p>
             <div className="flex flex-wrap gap-3">
+              <ScrollButton targetId="free-rental-analysis">
+                Get a free rental analysis
+              </ScrollButton>
               <Link
-                href="/contact?reason=property-management&source=pm-page"
-                className="inline-flex items-center justify-center rounded-full bg-rr-accent-gold px-4 py-2 text-sm font-semibold text-rr-text-primary shadow-[0_10px_28px_-16px_rgba(0,0,0,0.35)] transition hover:-translate-y-0.5"
-              >
-                Request a proposal
-              </Link>
-              <Link
-                href="/tools/rent-estimate-calculator"
+                href="/tools"
                 className="inline-flex items-center justify-center rounded-full border border-rr-border-gray px-4 py-2 text-sm font-semibold text-rr-text-primary transition hover:-translate-y-0.5 hover:border-rr-accent-darkteal hover:text-rr-accent-darkteal"
               >
                 Try the tools first
               </Link>
             </div>
+            <p className="text-xs font-semibold text-rr-text-primary/70">Free, no obligation. We reply within 1 business day.</p>
           </div>
           <div className="space-y-4 rounded-[1.1rem] border border-rr-border-gray bg-rr-surface-offwhite p-6">
             <p className="text-sm font-semibold text-rr-text-primary">What we handle</p>
@@ -84,8 +87,10 @@ export default function PropertyManagementPage() {
 
       <section className="space-y-6 rounded-[1.2rem] border border-rr-border-gray bg-rr-surface-white p-6 shadow-[var(--shadow-soft)] md:p-8">
         <div className="space-y-2">
-          <Eyebrow>Why owners choose us</Eyebrow>
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Built for owners who like clarity.</h2>
+          <Eyebrow>WHY OWNERS CHOOSE US</Eyebrow>
+          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+            Built for owners who want fewer vacancies and clearer decisions.
+          </h2>
           <p className="max-w-3xl text-sm leading-relaxed text-rr-text-primary/75">
             Transparent pricing, proactive communication, and measurable vacancy reduction.
           </p>
@@ -99,6 +104,8 @@ export default function PropertyManagementPage() {
           ))}
         </div>
       </section>
+
+      <FormSection />
     </main>
   );
 }
