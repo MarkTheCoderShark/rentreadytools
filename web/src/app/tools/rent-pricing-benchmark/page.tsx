@@ -180,7 +180,7 @@ export default function RentPricingPage() {
             Get a data-backed rent range in under a minute.
           </h1>
           <p className="max-w-xl text-sm leading-relaxed text-rr-text-primary/80">
-            Enter your basics—beds, baths, condition—and see a recommended range and under/overpricing.
+            Enter your address plus basics—beds, baths, condition—and see a recommended range and under/overpricing.
           </p>
           <PrimaryButton href="#tool">Run the calculator</PrimaryButton>
         </div>
@@ -213,10 +213,10 @@ export default function RentPricingPage() {
             />
             <div className="grid grid-cols-2 gap-5">
               <TextField
-                label="Address or ZIP"
+                label="Address"
                 value={inputs.address}
                 onChange={(address) => setInputs((prev) => ({ ...prev, address }))}
-                placeholder="e.g., 123 Main St, Portland OR or 97202"
+                placeholder="e.g., 6965 Amberwick Way, Citrus Heights CA"
               />
               <SelectField
                 label="Property type"

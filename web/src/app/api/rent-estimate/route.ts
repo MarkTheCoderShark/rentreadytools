@@ -4,6 +4,15 @@ type Body = {
   address?: string;
 };
 
+type GraphPoint = { x?: number; y?: number };
+
+type ZillowGraphResponse = {
+  DataPoints?: {
+    Current_Rent_Zestimate?: number;
+    homeValueChartData?: { points?: GraphPoint[] }[];
+  };
+};
+
 const BASE = "https://zillow-working-api.p.rapidapi.com";
 const HOST_HEADER = "zillow-working-api.p.rapidapi.com";
 
@@ -39,17 +48,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Failed to fetch Zillow data", details: text }, { status: response.status });
     }
 
-    const data = await response.json();
-    const history = extractHistory(data);
+    const data: ZillowGraphResponse = await response.json();
+    const { history, current } = extractHistory(data);
 
-    if (!history.length) {
+    if (!history.length && !current) {
       return NextResponse.json({ compsCount: 0 });
     }
 
-    const medianRent = median(history);
+    const medianRent = current ?? median(history);
 
     return NextResponse.json({
-      compsCount: history.length,
+      compsCount: history.length || (current ? 1 : 0),
       medianRent,
       medianRentPerSqft: 0,
       address,
@@ -60,42 +69,22 @@ export async function POST(request: Request) {
   }
 }
 
-function extractHistory(payload: unknown): number[] {
-  const values: number[] = [];
-  const seen = new Set<unknown>();
-
-  const walk = (node: unknown) => {
-    if (node === null || node === undefined) return;
-    if (seen.has(node)) return;
-    if (typeof node === "number" && Number.isFinite(node)) {
-      values.push(node);
-      return;
-    }
-    if (typeof node === "object") {
-      seen.add(node);
-      if (Array.isArray(node)) {
-        for (const item of node) {
-          if (typeof item === "number" && Number.isFinite(item)) {
-            values.push(item);
-          } else if (item && typeof item === "object" && "y" in (item as Record<string, unknown>)) {
-            const y = (item as Record<string, unknown>).y;
-            if (typeof y === "number" && Number.isFinite(y)) values.push(y);
-          } else {
-            walk(item);
+function extractHistory(payload: ZillowGraphResponse) {
+  const history: number[] = [];
+  const current = payload?.DataPoints?.Current_Rent_Zestimate;
+  const series = payload?.DataPoints?.homeValueChartData;
+  if (Array.isArray(series)) {
+    for (const item of series) {
+      if (Array.isArray(item?.points)) {
+        for (const point of item.points) {
+          if (typeof point?.y === "number" && Number.isFinite(point.y) && point.y > 0) {
+            history.push(point.y);
           }
-        }
-      } else {
-        const obj = node as Record<string, unknown>;
-        for (const key of Object.keys(obj)) {
-          walk(obj[key]);
         }
       }
     }
-  };
-
-  walk(payload);
-
-  return values.filter((v) => Number.isFinite(v) && v > 0);
+  }
+  return { history, current: typeof current === "number" ? current : undefined };
 }
 
 function median(values: number[]) {
