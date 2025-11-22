@@ -39,7 +39,7 @@ export default function NavBar() {
             RR
           </span>
           <span className="text-rr-text-primary">
-            RentReadyTools
+            RentReady<span className="text-rr-accent-gold">Tools</span>
           </span>
         </Link>
         <nav className="hidden items-center gap-6 text-sm font-semibold md:flex">
