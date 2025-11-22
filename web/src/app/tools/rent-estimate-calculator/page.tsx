@@ -251,7 +251,7 @@ export default function RentPricingPage() {
               <SelectField
                 label="Beds"
                 value={String(inputs.beds)}
-                onChange={(beds) => setInputs((prev) => ({ ...prev, beds }))}
+                onChange={(beds) => setInputs((prev) => ({ ...prev, beds: Number(beds) }))}
                 options={[
                   { value: "0", label: "Studio (0)" },
                   { value: "1", label: "1" },
@@ -265,7 +265,7 @@ export default function RentPricingPage() {
               <SelectField
                 label="Baths"
                 value={String(inputs.baths)}
-                onChange={(baths) => setInputs((prev) => ({ ...prev, baths }))}
+                onChange={(baths) => setInputs((prev) => ({ ...prev, baths: Number(baths) }))}
                 options={[
                   { value: "1", label: "1" },
                   { value: "1.5", label: "1.5" },
@@ -433,11 +433,15 @@ function formatCurrency(value: number) {
 }
 
 function computeHeuristic(inputs: Inputs) {
+  const numBeds = inputs.beds === "" ? 0 : inputs.beds;
+  const numBaths = inputs.baths === "" ? 0 : inputs.baths;
+  const numSqft = inputs.sqft === "" ? 0 : inputs.sqft;
+
   const base =
     950 +
-    inputs.beds * 360 +
-    inputs.baths * 180 +
-    (inputs.sqft ? Math.min(inputs.sqft, 2500) * 0.65 : 0);
+    numBeds * 360 +
+    numBaths * 180 +
+    (numSqft ? Math.min(numSqft, 2500) * 0.65 : 0);
 
   const typeAdjustment =
     inputs.propertyType === "house"
@@ -605,23 +609,25 @@ function NumberField({
   );
 }
 
-function SelectField({
+function SelectField<Value extends string>({
   label,
   value,
   onChange,
   options,
+  helper,
 }: {
   label: string;
-  value: string;
-  options: { value: string; label: string }[];
-  onChange: (value: PropertyType) => void;
+  value: Value;
+  options: { value: Value; label: string }[];
+  onChange: (value: Value) => void;
+  helper?: string;
 }) {
   return (
     <label className="space-y-1 text-sm font-semibold text-rr-text-primary">
       {label}
       <select
         value={value}
-        onChange={(e) => onChange(e.target.value as PropertyType)}
+        onChange={(e) => onChange(e.target.value as Value)}
         className="w-full rounded-lg border border-rr-border-gray bg-white px-3 py-2 text-sm font-normal text-rr-text-primary shadow-[var(--shadow-soft)] focus:border-rr-accent-darkteal focus:outline-none"
       >
         {options.map((option) => (
@@ -630,6 +636,7 @@ function SelectField({
           </option>
         ))}
       </select>
+      {helper ? <p className="text-xs font-normal text-rr-text-primary/65">{helper}</p> : null}
     </label>
   );
 }
