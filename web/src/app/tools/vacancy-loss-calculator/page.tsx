@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import { useMemo, useRef, useState } from "react";
+import type { ReactNode, RefObject } from "react";
 
 type FAQ = { question: string; answer: string };
 
@@ -29,31 +29,41 @@ export default function VacancyCostPage() {
   const [inputs, setInputs] = useState({
     monthlyRent: 2100,
     daysVacant: 12,
-    hourlyValue: 45,
-    hoursSpent: 10,
+    zipOrCity: "",
+    hourlyValue: 50,
+    hoursSpent: 12,
+    cashTurnoverCosts: 0,
+    rentConcession: 0,
   });
+  const [showRefine, setShowRefine] = useState(false);
+  const refineRef = useRef<HTMLDivElement | null>(null);
 
   const results = useMemo(() => {
-    const dailyRent = inputs.monthlyRent / 30;
-    const missedRent = dailyRent * inputs.daysVacant;
-    const laborCost = inputs.hoursSpent * inputs.hourlyValue;
-    const total = missedRent + laborCost;
-    const pctOfMonth = inputs.monthlyRent ? (total / inputs.monthlyRent) * 100 : 0;
+    const monthlyRent = Number(inputs.monthlyRent) || 0;
+    const daysVacant = Math.max(Number(inputs.daysVacant) || 0, 0);
+    const hoursSpent = Math.max(Number(inputs.hoursSpent) || 0, 0);
+    const hourlyValue = Math.max(Number(inputs.hourlyValue) || 0, 0);
+    const cashTurnoverCosts = Math.max(Number(inputs.cashTurnoverCosts) || 0, 0);
+    const rentConcession = Math.max(Number(inputs.rentConcession) || 0, 0);
 
-    const trimmedBy = (days: number) => {
-      const newDays = Math.max(inputs.daysVacant - days, 0);
-      const savedRent = dailyRent * (inputs.daysVacant - newDays);
-      return { newDays, savings: savedRent };
-    };
+    const dailyRent = monthlyRent > 0 ? monthlyRent / 30 : 0;
+    const vacancyLoss = dailyRent * daysVacant;
+    const timeCost = hoursSpent * hourlyValue;
+    const hardCost = cashTurnoverCosts;
+    const concessionCost = rentConcession;
+    const totalCost = vacancyLoss + timeCost + hardCost + concessionCost;
+    const costPerDayVacant = daysVacant > 0 ? totalCost / daysVacant : 0;
+    const pctOfMonth = monthlyRent ? (totalCost / monthlyRent) * 100 : 0;
 
     return {
       dailyRent,
-      missedRent,
-      laborCost,
-      total,
+      vacancyLoss,
+      timeCost,
+      hardCost,
+      concessionCost,
+      totalCost,
+      costPerDayVacant,
       pctOfMonth,
-      trimmed5: trimmedBy(5),
-      trimmed10: trimmedBy(10),
     };
   }, [inputs]);
 
@@ -98,7 +108,7 @@ export default function VacancyCostPage() {
       >
         <div className="space-y-5">
           <div className="space-y-4 rounded-[12px] border border-rr-border-gray bg-rr-surface-offwhite/60 p-5 shadow-[var(--shadow-soft)]">
-            <SectionHeader eyebrow="Inputs" title="Your turnover details" />
+            <SectionHeader eyebrow="Step 1" title="Quick estimate (no friction)" />
             <div className="grid grid-cols-2 gap-5">
               <NumberField
                 label="Monthly rent"
@@ -113,30 +123,109 @@ export default function VacancyCostPage() {
                 label="Days vacant"
                 value={inputs.daysVacant}
                 min={0}
-                max={120}
+                max={180}
                 step={1}
+                helper="Typical turnovers take ~7–14 days."
                 onChange={(daysVacant) => setInputs((prev) => ({ ...prev, daysVacant }))}
               />
-              <NumberField
-                label="Your hourly value"
-                prefix="$"
-                value={inputs.hourlyValue}
-                min={0}
-                max={500}
-                step={5}
-                onChange={(hourlyValue) => setInputs((prev) => ({ ...prev, hourlyValue }))}
-                helper="Think of what your time is worth."
-              />
-              <NumberField
-                label="Hours spent on tasks"
-                value={inputs.hoursSpent}
-                min={0}
-                max={120}
-                step={1}
-                onChange={(hoursSpent) => setInputs((prev) => ({ ...prev, hoursSpent }))}
-                helper="Cleaning, coordinating, showings, marketing."
+              <TextField
+                label="ZIP or city (optional)"
+                value={inputs.zipOrCity}
+                placeholder="e.g., 97202 or Portland"
+                onChange={(zipOrCity) => setInputs((prev) => ({ ...prev, zipOrCity }))}
+                helper="Helps us add local benchmarks later."
               />
             </div>
+            <p className="text-xs text-rr-text-primary/65">Results update instantly as you type.</p>
+          </div>
+
+          <div
+            ref={refineRef}
+            className="space-y-3 rounded-[12px] border border-rr-border-gray bg-rr-surface-white p-5 shadow-[var(--shadow-soft)]"
+          >
+            <button
+              className="flex w-full items-center justify-between text-left"
+              onClick={() => setShowRefine((prev) => !prev)}
+              type="button"
+            >
+              <div className="space-y-1">
+                <Eyebrow>Step 2</Eyebrow>
+                <p className="text-lg font-semibold text-rr-text-primary">Refine estimate</p>
+                <p className="text-sm text-rr-text-primary/70">Edit assumptions: time, hourly value, cash costs, concessions.</p>
+              </div>
+              <span className="text-xl text-rr-text-primary/70">{showRefine ? "−" : "+"}</span>
+            </button>
+            {showRefine ? (
+              <div className="space-y-4 pt-2">
+                <div className="grid grid-cols-2 gap-4">
+                  <NumberField
+                    label="Hours spent on tasks"
+                    value={inputs.hoursSpent}
+                    min={0}
+                    max={200}
+                    step={1}
+                    onChange={(hoursSpent) => setInputs((prev) => ({ ...prev, hoursSpent }))}
+                    helper="Cleaning, coordinating, showings, marketing."
+                  />
+                  <div className="space-y-2">
+                    <NumberField
+                      label="Hourly value ($/hr)"
+                      prefix="$"
+                      value={inputs.hourlyValue}
+                      min={0}
+                      max={500}
+                      step={5}
+                      onChange={(hourlyValue) => setInputs((prev) => ({ ...prev, hourlyValue }))}
+                      helper="What your time is worth."
+                    />
+                    <div className="flex flex-wrap gap-2 text-xs font-semibold text-rr-text-primary/70">
+                      {[25, 50, 75].map((value) => (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => setInputs((prev) => ({ ...prev, hourlyValue: value }))}
+                          className="rounded-full border border-rr-border-gray px-3 py-1 transition hover:border-rr-accent-darkteal hover:text-rr-accent-darkteal"
+                        >
+                          ${value}/hr
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <NumberField
+                    label="Out-of-pocket turnover costs"
+                    prefix="$"
+                    value={inputs.cashTurnoverCosts}
+                    min={0}
+                    max={20000}
+                    step={50}
+                    onChange={(cashTurnoverCosts) => setInputs((prev) => ({ ...prev, cashTurnoverCosts }))}
+                    helper="Supplies, cleaners, small repairs."
+                  />
+                  <ToggleRow
+                    label="Use typical estimate"
+                    onToggle={(useTypical) =>
+                      setInputs((prev) => ({
+                        ...prev,
+                        cashTurnoverCosts: useTypical ? 500 : prev.cashTurnoverCosts || 0,
+                      }))
+                    }
+                  />
+                  <NumberField
+                    label="Rent concession / discount"
+                    prefix="$"
+                    value={inputs.rentConcession}
+                    min={0}
+                    max={20000}
+                    step={50}
+                    onChange={(rentConcession) => setInputs((prev) => ({ ...prev, rentConcession }))}
+                    helper="Discounts or free days offered."
+                  />
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <FAQSection faqs={faqs} />
@@ -156,24 +245,43 @@ export default function VacancyCostPage() {
                 {results.pctOfMonth.toFixed(1)}% of a month
               </span>
             </div>
-            <p className="mt-2 text-[30px] font-bold leading-tight text-rr-text-primary">{formatCurrency(results.total)}</p>
+            <p className="mt-2 text-[30px] font-bold leading-tight text-rr-text-primary">{formatCurrency(results.totalCost)}</p>
             <p className="text-sm text-rr-text-primary/70">
-              Includes {formatCurrency(results.missedRent)} missed rent + {formatCurrency(results.laborCost)} for your time.
+              Includes {formatCurrency(results.vacancyLoss)} missed rent + {formatCurrency(results.timeCost)} for your time
+              {inputs.cashTurnoverCosts ? ` + ${formatCurrency(results.hardCost)} cash costs` : ""}{inputs.rentConcession ? ` + ${formatCurrency(results.concessionCost)} concessions` : ""}.
             </p>
 
-            <div className="mt-4 grid grid-cols-3 gap-4">
+            <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3">
               <Metric label="Daily rent loss" value={formatCurrency(results.dailyRent)} />
-              <Metric label="Missed rent" value={formatCurrency(results.missedRent)} />
-              <Metric label="Value of your time" value={formatCurrency(results.laborCost)} />
+              <Metric label="Lost rent" value={formatCurrency(results.vacancyLoss)} />
+              <Metric label="Your time cost" value={formatCurrency(results.timeCost)} />
+              <Metric label="Cash costs" value={formatCurrency(results.hardCost)} />
+              <Metric label="Concessions" value={formatCurrency(results.concessionCost)} />
+              <Metric label="Cost per vacant day" value={formatCurrency(results.costPerDayVacant)} />
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              <ScenarioCard title="Trim 5 days" savings={results.trimmed5.savings} />
-              <ScenarioCard title="Trim 10 days" savings={results.trimmed10.savings} />
+            <div className="mt-5 space-y-2 rounded-[1rem] border border-rr-border-gray bg-rr-surface-offwhite/70 p-4">
+              <p className="text-sm font-semibold text-rr-text-primary">Assumptions used (editable)</p>
+              <div className="flex flex-wrap gap-2 text-xs font-semibold text-rr-text-primary/75">
+                <AssumptionPill label={`${inputs.hoursSpent} hours landlord work`} onClick={() => focusRefine(refineRef, setShowRefine)} />
+                <AssumptionPill label={`$${inputs.hourlyValue}/hr value of time`} onClick={() => focusRefine(refineRef, setShowRefine)} />
+                <AssumptionPill label={`$${inputs.cashTurnoverCosts || 0} cash turnover costs`} onClick={() => focusRefine(refineRef, setShowRefine)} />
+              </div>
+            </div>
+
+            <div className="mt-5 space-y-2 rounded-[1rem] border border-rr-border-gray bg-rr-surface-white p-4">
+              <p className="text-sm text-rr-text-primary/80">
+                Even with conservative assumptions, DIY turnover costs about {formatCurrency(results.totalCost)} this cycle.
+              </p>
+              <p className="text-sm font-semibold text-rr-text-primary">
+                Want to reduce that next cycle? Get a free local rental analysis.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <PrimaryButton href="/contact?reason=rent-analysis&source=vacancy-calculator-primary">Get a free rental analysis</PrimaryButton>
+                <GhostButton href="/property-management">Talk to a property manager</GhostButton>
+              </div>
             </div>
           </div>
-
-          <CTACluster />
         </div>
       </section>
     </main>
@@ -262,18 +370,6 @@ function Metric({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ScenarioCard({ title, savings }: { title: string; savings: number }) {
-  return (
-    <div className="rounded-[12px] border border-rr-border-gray bg-rr-surface-offwhite/60 p-4 shadow-[var(--shadow-soft)]">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold text-rr-text-primary">{title}</p>
-      </div>
-      <p className="mt-2 text-xl font-semibold text-rr-text-primary">{formatCurrency(savings)}</p>
-      <p className="text-sm text-rr-text-primary/75">Savings if you trim {title.replace(/\D/g, "") || "5"} days.</p>
-    </div>
-  );
-}
-
 function FAQSection({ faqs }: { faqs: FAQ[] }) {
   const schema = {
     "@context": "https://schema.org",
@@ -304,120 +400,6 @@ function FAQSection({ faqs }: { faqs: FAQ[] }) {
   );
 }
 
-function CTACluster() {
-  const [mode, setMode] = useState<"idle" | "form" | "loading" | "success" | "error">("idle");
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [zip, setZip] = useState("");
-
-  const handleSubmit = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (!email.trim()) {
-      setError("Please enter an email.");
-      return;
-    }
-    setError(null);
-    setMode("loading");
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: "Vacancy Plan Request",
-          email,
-          reason: "Vacancy plan unlock",
-          message: `Please send the local DOM and vacancy plan.${zip ? ` ZIP: ${zip}` : ""}`,
-          source: "vacancy-cta",
-        }),
-      });
-      if (!res.ok) {
-        throw new Error("Failed to send. Please try again.");
-      }
-      setMode("success");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to send. Please try again.");
-      setMode("error");
-    }
-  };
-
-  return (
-    <div className="mt-8 space-y-4 rounded-[12px] bg-[#F7F6F4] p-8 text-center shadow-[var(--shadow-soft)]">
-      <h3 className="text-xl font-semibold text-rr-text-primary">Want to cut vacancy faster?</h3>
-      <p className="text-sm text-rr-text-primary/75">Unlock your local average days-on-market & a plan.</p>
-      {mode === "idle" ? (
-        <>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <PrimaryButton href="#" onClick={(e) => { e.preventDefault(); setMode("form"); }}>
-              Get my vacancy plan
-            </PrimaryButton>
-            <GhostButton href="/property-management">See property management services →</GhostButton>
-          </div>
-          <div className="mt-2 text-sm text-rr-text-primary/70">
-            <span className="mr-1">🔒</span>
-            Average days-on-market in your area: 21–27 days (locked)
-          </div>
-        </>
-      ) : mode === "success" ? (
-        <div className="space-y-3">
-          <p className="text-lg font-semibold text-rr-text-primary">Your plan is on the way!</p>
-          <p className="text-sm text-rr-text-primary/75">
-            We’ll email your local DOM and vacancy recommendations shortly.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <PrimaryButton href="/contact?reason=Vacancy%20Plan%20Follow-up&source=vacancy-cta-success">
-              Book a call
-            </PrimaryButton>
-            <GhostButton href="/property-management">View PM services →</GhostButton>
-          </div>
-        </div>
-      ) : (
-        <form className="space-y-3" onSubmit={handleSubmit}>
-          <p className="text-sm font-semibold text-rr-text-primary">Enter your email to unlock your plan:</p>
-          <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-center md:justify-center">
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full rounded-full border border-rr-border-gray bg-white px-4 py-2.5 text-sm font-medium text-rr-text-primary shadow-[var(--shadow-soft)] focus:border-rr-accent-darkteal focus:outline-none"
-            />
-            <button
-              type="submit"
-              disabled={mode === "loading"}
-              className="inline-flex items-center justify-center rounded-full bg-rr-accent-gold px-5 py-2.5 text-sm font-semibold text-rr-hero-bg shadow-[0_12px_30px_-16px_rgba(0,0,0,0.35)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {mode === "loading" ? "Sending..." : "Continue →"}
-            </button>
-          </div>
-          <div className="grid gap-2 md:grid-cols-[220px_1fr] md:items-center md:justify-center">
-            <div className="space-y-1">
-              <label className="text-sm font-semibold text-rr-text-primary">ZIP code (optional)</label>
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="\\d*"
-                maxLength={10}
-                placeholder="e.g., 97202"
-                className="w-full rounded-full border border-rr-border-gray bg-white px-4 py-2.5 text-sm font-medium text-rr-text-primary shadow-[var(--shadow-soft)] focus:border-rr-accent-darkteal focus:outline-none"
-                value={zip}
-                onChange={(e) => setZip(e.target.value)}
-              />
-            </div>
-            <p className="text-xs text-rr-text-primary/65">Optional — helps us generate local DOM accuracy.</p>
-          </div>
-          {error ? <p className="text-sm text-rr-status-alert">{error}</p> : null}
-          <p className="text-xs text-rr-text-primary/65">No spam. We only send your vacancy report.</p>
-          <div className="text-sm text-rr-text-primary/70">
-            <span className="mr-1">🔒</span>
-            Unlocking: Local DOM + personalized recommendations
-          </div>
-        </form>
-      )}
-    </div>
-  );
-}
-
 function PrimaryButton({ href, children, onClick }: { href: string; children: ReactNode; onClick?: (e: React.MouseEvent) => void }) {
   return (
     <Link
@@ -439,4 +421,76 @@ function GhostButton({ href, children }: { href: string; children: ReactNode }) 
       {children}
     </Link>
   );
+}
+
+function TextField({
+  label,
+  value,
+  placeholder,
+  onChange,
+  helper,
+}: {
+  label: string;
+  value: string;
+  placeholder?: string;
+  helper?: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="space-y-1 text-sm font-semibold text-rr-text-primary">
+      {label}
+      <input
+        type="text"
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-lg border border-rr-border-gray bg-white px-3 py-2 text-sm font-normal text-rr-text-primary shadow-[var(--shadow-soft)] focus:border-rr-accent-darkteal focus:outline-none"
+      />
+      {helper ? <p className="text-xs font-normal text-rr-text-primary/65">{helper}</p> : null}
+    </label>
+  );
+}
+
+function ToggleRow({ label, onToggle }: { label: string; onToggle: (checked: boolean) => void }) {
+  const [checked, setChecked] = useState(false);
+  return (
+    <div className="flex items-center justify-between rounded-lg border border-rr-border-gray bg-rr-surface-offwhite/80 px-3 py-2">
+      <div className="space-y-0.5">
+        <p className="text-sm font-semibold text-rr-text-primary">{label}</p>
+        <p className="text-xs text-rr-text-primary/65">Fills a typical $500 turnover cost.</p>
+      </div>
+      <button
+        type="button"
+        onClick={() => {
+          const next = !checked;
+          setChecked(next);
+          onToggle(next);
+        }}
+        className={`flex h-6 w-11 items-center rounded-full transition ${checked ? "bg-rr-accent-darkteal" : "bg-rr-border-gray"}`}
+      >
+        <span
+          className={`ml-1 h-4 w-4 rounded-full bg-white transition ${checked ? "translate-x-5" : ""}`}
+        />
+      </button>
+    </div>
+  );
+}
+
+function AssumptionPill({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-full border border-rr-border-gray bg-white px-3 py-1 transition hover:border-rr-accent-darkteal hover:text-rr-accent-darkteal"
+    >
+      {label}
+    </button>
+  );
+}
+
+function focusRefine(ref: RefObject<HTMLDivElement>, setOpen: (state: boolean) => void) {
+  setOpen(true);
+  if (ref.current) {
+    ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 }
