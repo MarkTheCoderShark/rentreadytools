@@ -133,9 +133,9 @@ export default function RentPricingPage() {
 
     if (zestimate && zestimate > 0) {
       suggested = Math.round(zestimate);
-      rangeLower = Math.round(zestimate * 0.97);
-      rangeUpper = Math.round(zestimate * 1.03);
-      note = "Zillow rent estimate";
+      rangeLower = Math.round(zestimate * 0.95);
+      rangeUpper = Math.round(zestimate * 1.05);
+      note = "Live rent estimate";
     } else if (compCount >= 10 && compEstimate > 0) {
       const blendedMid = 0.7 * compEstimate + 0.3 * heuristic.suggested;
       const adjMid = blendedMid * heuristic.conditionFactor;
@@ -348,11 +348,6 @@ export default function RentPricingPage() {
               ) : (
                 <p className="text-sm text-rr-text-primary/75">Add your current asking rent to see under/overpricing.</p>
               )}
-              {results.comps?.currentRentZestimate ? (
-                <p className="text-sm text-rr-text-primary/70">
-                  Zillow rent estimate: {formatCurrency(results.comps.currentRentZestimate)}
-                </p>
-              ) : null}
               <CompMeta results={results} />
             </div>
 
@@ -465,7 +460,7 @@ function CompMeta({
       </p>
       <p>
         {zestimate
-          ? `Zillow rent estimate: ${formatCurrency(zestimate)}`
+          ? `Live rent estimate used. Range reflects ±5% around ${formatCurrency(zestimate)}.`
           : compsCount > 0
           ? `Comps: ${compsCount} found. Median rent ${formatCurrency(medianRent)}.`
           : "Fetching live comps..."}
