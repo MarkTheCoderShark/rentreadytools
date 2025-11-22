@@ -489,7 +489,10 @@ Everywhere a tool output reveals pain (money lost, underpricing), nearby CTA sho
 - Stack initialized: Next.js (App Router, TypeScript) with Tailwind 4 in `web/`.
 - Brand system applied: teal/gold palette, semantic tokens in globals, Inter + JetBrains Mono fonts.
 - Layout chrome: sticky nav (hero-transparent → solid on scroll) with primary CTA; full footer with tools/guides/company links.
-- Homepage built to spec: hero with dark teal image + white text, how-it-works, tools grid, turnover/rent highlights, PM dark block, featured resources, bottom deep-teal CTA.
-- Buttons standardized: gold primary, dark-teal outlines on light; white/outline on dark sections; bottom CTA uses deep-teal scheme.
-- Cards themed: white surfaces, border-gray dividers; PM block uses dark teal with light companion card; rent highlight uses warm gradient.
-- Lint clean via `npm run lint`; ready for tool pages and SEO metadata next.
+- Homepage built to spec: hero with dark teal image + white text, how-it-works, tools grid, turnover/rent highlights, PM dark block, featured resources; bottom CTA now embeds the consult form.
+- Tools implemented with unified layout (compressed hero, left inputs/FAQ, right results + CTA): Rent Price Calculator, Vacancy Cost Calculator, Move-In Readiness Checklist, Rental Renovation ROI Calculator.
+- Rent Price Calculator now uses live Zillow rent estimate (address-only input) as primary suggested price; “Get live comps” gate prevents showing a range before fetching; heuristic/comps blend as fallback.
+- Vacancy Cost Calculator redesigned per spec with unified results card, inline email capture CTA, and FAQs.
+- Move-In Readiness and Renovation ROI tools restyled to the new layout with FAQs and CTAs.
+- Contact/lead capture: reusable form, /contact page, inline form on homepage bottom CTA; Resend wired via `/api/contact`.
+- Rent estimate API switched to Zillow working API; env updated to `ZILLOW_API_KEY`; lint clean via `npm run lint`.
