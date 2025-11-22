@@ -43,7 +43,7 @@ const phases = [
 ];
 
 const links = [
-  { label: "Vacancy Cost Calculator", href: "/tools/vacancy-loss-calculator" },
+  { label: "Vacancy Cost Calculator", href: "/tools/vacancy-rate-calculator" },
   { label: "Move-out cleaning checklist", href: "/turnover/move-out-cleaning-checklist" },
   { label: "Turnover timeline benchmarks", href: "/turnover/how-long-should-turnover-take" },
   { label: "True cost of turnover", href: "/turnover/true-cost-of-tenant-turnover" },
@@ -69,7 +69,7 @@ export default function TurnoverGuidePage() {
             <p className="text-sm leading-relaxed text-rr-text-primary/75">Follow these phases and keep a daily owner.</p>
           </div>
           <Link
-            href="/tools/vacancy-loss-calculator"
+            href="/tools/vacancy-rate-calculator"
             className="inline-flex items-center justify-center rounded-full bg-rr-accent-gold px-4 py-2 text-sm font-semibold text-rr-text-primary shadow-[0_10px_28px_-16px_rgba(0,0,0,0.35)] transition hover:-translate-y-0.5"
           >
             Calculate vacancy cost

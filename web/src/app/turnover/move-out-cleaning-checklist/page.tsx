@@ -125,7 +125,7 @@ export default function TurnoverCleaningChecklistPage() {
             <p>Pair this checklist with:</p>
             <ul className="space-y-1 pl-4">
               <li className="list-disc">
-                <Link className="text-rr-accent-darkteal hover:text-rr-tool-darkteal" href="/tools/vacancy-loss-calculator">
+                <Link className="text-rr-accent-darkteal hover:text-rr-tool-darkteal" href="/tools/vacancy-rate-calculator">
                   Vacancy cost calculator
                 </Link>
               </li>

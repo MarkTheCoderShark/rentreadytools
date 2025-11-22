@@ -65,7 +65,7 @@ Tone Do/Don’t:
 /
   /tools/
     /tools/rent-estimate-calculator
-    /tools/vacancy-loss-calculator
+    /tools/vacancy-rate-calculator
     /tools/make-ready-audit
     /tools/renovation-roi
   /turnover/
@@ -189,7 +189,7 @@ Suggested sitemap:
 / – Homepage
 /tools/
 /tools/rent-estimate-calculator
-/tools/vacancy-loss-calculator
+/tools/vacancy-rate-calculator
 /tools/make-ready-audit
 /tools/renovation-roi
 /turnover/

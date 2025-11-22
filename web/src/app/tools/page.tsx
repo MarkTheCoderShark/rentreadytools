@@ -12,7 +12,7 @@ const tools = [
   {
     name: "Vacancy Cost Calculator",
     description: "Quantify how much empty days cost you, including your own time.",
-    href: "/tools/vacancy-loss-calculator",
+    href: "/tools/vacancy-rate-calculator",
   },
   {
     name: "Move-In Readiness Checklist",

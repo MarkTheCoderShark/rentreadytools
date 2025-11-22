@@ -61,7 +61,7 @@ function Footer() {
           title="Tools"
           links={[
             { label: "Rent Price Calculator", href: "/tools/rent-estimate-calculator" },
-            { label: "Vacancy Cost Calculator", href: "/tools/vacancy-loss-calculator" },
+            { label: "Vacancy Cost Calculator", href: "/tools/vacancy-rate-calculator" },
             { label: "Move-In Readiness Checklist", href: "/tools/make-ready-audit" },
             { label: "Rental Renovation ROI Calculator", href: "/tools/renovation-roi" },
           ]}
