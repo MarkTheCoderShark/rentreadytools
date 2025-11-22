@@ -68,107 +68,108 @@ export default function RenovationROIPage() {
   }, [inputs]);
 
   return (
-    <main className="relative mx-auto max-w-6xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-16 md:px-6 md:py-16">
-      <section className="overflow-hidden rounded-[1.4rem] border border-rr-border-gray bg-rr-surface-white shadow-[var(--shadow-card)]">
-        <div className="grid gap-8 p-8 md:grid-cols-[1.1fr_0.9fr] md:p-12">
-          <div className="space-y-6">
-            <Eyebrow>Rental Renovation ROI Calculator</Eyebrow>
-            <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
-              Model rent lift and payback before you spend.
-            </h1>
-            <p className="max-w-2xl text-sm leading-relaxed text-rr-text-primary/80">
-              Choose an upgrade, enter cost, and see the expected rent increase, payback period, and whether it’s worth
-              it for a rental—not a flip.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <PrimaryButton href="#tool">Run the ROI calculator</PrimaryButton>
-              <GhostButton href="/property-management">Ask about turnkey upgrades</GhostButton>
-            </div>
-          </div>
-          <div className="rounded-[1.1rem] border border-rr-border-gray bg-rr-surface-offwhite p-6 shadow-[var(--shadow-soft)]">
-            <p className="text-sm font-semibold text-rr-text-primary">Tips</p>
-            <ul className="mt-3 space-y-2 text-sm text-rr-text-primary/75">
-              <li className="flex items-start gap-2">
-                <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-success" />
-                <span>Target payback under 24 months for rentals.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-success" />
-                <span>Match upgrades to neighborhood expectations; over-improving slows ROI.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-alert" />
-                <span>Don’t forget vacancy during the project—budget for those days too.</span>
-              </li>
-            </ul>
-          </div>
+    <main
+      className="relative mx-auto w-full space-y-10 px-4 py-8 text-rr-text-primary md:px-6 md:py-10"
+      style={{ maxWidth: "1280px" }}
+    >
+      <section className="grid max-h-[340px] grid-cols-[1fr_300px] items-start gap-8 py-12">
+        <div className="space-y-4">
+          <Eyebrow>Rental Renovation ROI Calculator</Eyebrow>
+          <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
+            Model rent lift and payback before you spend.
+          </h1>
+          <p className="max-w-xl text-sm leading-relaxed text-rr-text-primary/80">
+            Choose an upgrade, enter cost, and see the expected rent increase and payback for rentals—not flips.
+          </p>
+          <PrimaryButton href="#tool">Run the ROI calculator</PrimaryButton>
+        </div>
+        <div className="rounded-[12px] border border-rr-border-gray bg-rr-surface-offwhite p-4 shadow-[var(--shadow-soft)]">
+          <p className="text-sm font-semibold text-rr-text-primary">Tips</p>
+          <ul className="mt-3 space-y-2 text-sm text-rr-text-primary/75">
+            <li className="flex items-start gap-2">
+              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-success" />
+              <span>Target payback under 24 months for rentals.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-success" />
+              <span>Match upgrades to neighborhood expectations.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-alert" />
+              <span>Account for vacancy during the project.</span>
+            </li>
+          </ul>
         </div>
       </section>
 
       <section
         id="tool"
-        className="grid gap-6 rounded-[1.4rem] border border-rr-border-gray bg-rr-surface-white p-6 shadow-[var(--shadow-card)] md:grid-cols-[1fr_0.95fr] md:p-8"
+        className="grid grid-cols-[45%_55%] gap-8 py-8 md:py-10"
       >
-        <div className="space-y-4">
-          <SectionHeader
-            eyebrow="Inputs"
-            title="Upgrade details"
-            description="Start with your current rent, select an upgrade, and adjust the cost and rent lift."
-          />
-          <div className="grid gap-4 md:grid-cols-2">
-            <NumberField
-              label="Current monthly rent"
-              prefix="$"
-              value={inputs.currentRent}
-              min={0}
-              max={8000}
-              step={25}
-              onChange={(currentRent) => setInputs((prev) => ({ ...prev, currentRent }))}
+        <div className="space-y-5">
+          <div className="space-y-4 rounded-[12px] border border-rr-border-gray bg-rr-surface-offwhite/60 p-5 shadow-[var(--shadow-soft)]">
+            <SectionHeader
+              eyebrow="Inputs"
+              title="Upgrade details"
+              description="Start with your current rent, select an upgrade, and adjust the cost and rent lift."
             />
-            <SelectField
-              label="Upgrade type"
-              value={inputs.upgrade}
-              onChange={(upgrade) => {
-                const option = upgrades.find((u) => u.value === upgrade);
-                setInputs((prev) => ({
-                  ...prev,
-                  upgrade,
-                  cost: option ? option.defaultCost : prev.cost,
-                  expectedIncrease: option ? option.defaultIncrease : prev.expectedIncrease,
-                }));
-              }}
-              options={upgrades}
-            />
-            <NumberField
-              label="Estimated upgrade cost"
-              prefix="$"
-              value={inputs.cost}
-              min={0}
-              max={50000}
-              step={100}
-              onChange={(cost) => setInputs((prev) => ({ ...prev, cost }))}
-              helper="All-in cost including labor and materials."
-            />
-            <NumberField
-              label="Expected monthly rent increase"
-              prefix="$"
-              value={inputs.expectedIncrease}
-              min={0}
-              max={2000}
-              step={10}
-              onChange={(expectedIncrease) => setInputs((prev) => ({ ...prev, expectedIncrease }))}
-              helper="What you believe the upgrade will add monthly."
-            />
+            <div className="grid grid-cols-2 gap-5">
+              <NumberField
+                label="Current monthly rent"
+                prefix="$"
+                value={inputs.currentRent}
+                min={0}
+                max={8000}
+                step={25}
+                onChange={(currentRent) => setInputs((prev) => ({ ...prev, currentRent }))}
+              />
+              <SelectField
+                label="Upgrade type"
+                value={inputs.upgrade}
+                onChange={(upgrade) => {
+                  const option = upgrades.find((u) => u.value === upgrade);
+                  setInputs((prev) => ({
+                    ...prev,
+                    upgrade,
+                    cost: option ? option.defaultCost : prev.cost,
+                    expectedIncrease: option ? option.defaultIncrease : prev.expectedIncrease,
+                  }));
+                }}
+                options={upgrades}
+              />
+              <NumberField
+                label="Estimated upgrade cost"
+                prefix="$"
+                value={inputs.cost}
+                min={0}
+                max={50000}
+                step={100}
+                onChange={(cost) => setInputs((prev) => ({ ...prev, cost }))}
+                helper="All-in cost including labor and materials."
+              />
+              <NumberField
+                label="Expected monthly rent increase"
+                prefix="$"
+                value={inputs.expectedIncrease}
+                min={0}
+                max={2000}
+                step={10}
+                onChange={(expectedIncrease) => setInputs((prev) => ({ ...prev, expectedIncrease }))}
+                helper="What you believe the upgrade will add monthly."
+              />
+            </div>
           </div>
+
+          <FAQSection faqs={faqs} />
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           <SectionHeader
             eyebrow="Results"
             title="ROI snapshot"
             description="New rent, annual lift, and payback period."
           />
-          <div className="rounded-[1.1rem] border border-rr-border-gray bg-gradient-to-br from-rr-rent-grad-start via-rr-rent-peach/40 to-rr-rent-grad-end p-6 shadow-[var(--shadow-soft)]">
+          <div className="rounded-[12px] border border-rr-border-gray bg-gradient-to-br from-rr-rent-grad-start via-rr-rent-peach/40 to-rr-rent-grad-end p-6 shadow-[var(--shadow-soft)]">
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-rr-text-primary/70">New estimated rent</p>
               <VerdictPill verdict={results.verdict} />
@@ -184,26 +185,24 @@ export default function RenovationROIPage() {
               <Metric label="Upgrade cost" value={formatCurrency(inputs.cost)} />
               <Metric label="Current rent" value={formatCurrency(inputs.currentRent)} />
             </div>
-          </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
-            <InsightCard
-              title="When it’s worth it"
-              items={[
-                "Payback under ~24 months is typically strong for rentals.",
-                "Pair upgrades with lease renewal to avoid extra vacancy.",
-              ]}
-            />
-            <InsightCard
-              title="If payback is slow"
-              items={[
-                "Downscope: focus on paint/fixtures before bigger projects.",
-                "Rebid labor or time the work between tenants to cut downtime.",
-              ]}
-            />
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              <InsightCard
+                title="When it’s worth it"
+                items={[
+                  "Payback under ~24 months is typically strong for rentals.",
+                  "Pair upgrades with lease renewal to avoid extra vacancy.",
+                ]}
+              />
+              <InsightCard
+                title="If payback is slow"
+                items={[
+                  "Downscope: focus on paint/fixtures before bigger projects.",
+                  "Rebid labor or time the work between tenants to cut downtime.",
+                ]}
+              />
+            </div>
           </div>
-
-          <FAQSection faqs={faqs} />
 
           <CTACluster />
         </div>

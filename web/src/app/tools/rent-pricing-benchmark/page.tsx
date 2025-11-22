@@ -1,10 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
 type PropertyType = "house" | "condo" | "duplex" | "apartment";
+type Inputs = {
+  zip: string;
+  propertyType: PropertyType;
+  beds: number;
+  baths: number;
+  sqft: number;
+  parking: boolean;
+  condition: number;
+  currentRent: number;
+};
 type FAQ = { question: string; answer: string };
 
 const propertyTypes: { value: PropertyType; label: string }[] = [
@@ -41,174 +51,252 @@ const faqs: FAQ[] = [
   },
 ];
 
+const initialInputs: Inputs = {
+  zip: "97202",
+  propertyType: "house",
+  beds: 3,
+  baths: 2,
+  sqft: 1450,
+  parking: true,
+  condition: 4,
+  currentRent: 2150,
+};
+
 export default function RentPricingPage() {
-  const [inputs, setInputs] = useState({
-    zip: "97202",
-    propertyType: "house" as PropertyType,
-    beds: 3,
-    baths: 2,
-    sqft: 1450,
-    parking: true,
-    condition: 4,
-    currentRent: 2150,
-  });
+  const [inputs, setInputs] = useState<Inputs>(initialInputs);
+
+  const [apiEstimate, setApiEstimate] = useState<{
+    status: "idle" | "loading" | "ready" | "error";
+    data?: { compsCount: number; medianRent: number; medianRentPerSqft: number; zip?: string };
+    error?: string;
+  }>({ status: "idle" });
+
+  const heuristic = useMemo(() => computeHeuristic(inputs), [inputs]);
+
+  useEffect(() => {
+    if (!inputs.zip) {
+      setApiEstimate({ status: "idle" });
+      return;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      setApiEstimate((prev) => ({ ...prev, status: "loading" }));
+      try {
+        const res = await fetch("/api/rent-estimate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            zip: inputs.zip,
+            beds: inputs.beds,
+            baths: inputs.baths,
+            sqft: inputs.sqft,
+            propertyType: inputs.propertyType,
+          }),
+          signal: controller.signal,
+        });
+        if (!res.ok) {
+          const msg = await res.text();
+          throw new Error(msg || "Failed to fetch comps");
+        }
+        const data = await res.json();
+        setApiEstimate({ status: "ready", data });
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        setApiEstimate({
+          status: "error",
+          error: error instanceof Error ? error.message : "Failed to fetch comps",
+        });
+      }
+    }, 400);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [inputs.zip, inputs.beds, inputs.baths, inputs.sqft, inputs.propertyType]);
 
   const results = useMemo(() => {
-    const base =
-      950 +
-      inputs.beds * 360 +
-      inputs.baths * 180 +
-      (inputs.sqft ? Math.min(inputs.sqft, 2500) * 0.65 : 0);
+    const compCount = apiEstimate.data?.compsCount ?? 0;
+    const compRentPerSqft = apiEstimate.data?.medianRentPerSqft ?? 0;
+    const compRent = apiEstimate.data?.medianRent ?? 0;
 
-    const typeAdjustment =
-      inputs.propertyType === "house"
-        ? 75
-        : inputs.propertyType === "condo"
-          ? -25
-          : inputs.propertyType === "duplex"
-            ? 0
-            : -50;
+    const compEstimate =
+      inputs.sqft && compRentPerSqft
+        ? compRentPerSqft * inputs.sqft
+        : compRent || 0;
 
-    const conditionFactor = 0.86 + (inputs.condition - 3) * 0.06; // ~0.74–1.1
-    const parkingAdjustment = inputs.parking ? 85 : 0;
-    const midpoint = (base + typeAdjustment + parkingAdjustment) * conditionFactor;
+    let suggested = heuristic.suggested;
+    let rangeLower = heuristic.lower;
+    let rangeUpper = heuristic.upper;
+    let note = "Heuristic estimate";
 
-    const lower = midpoint * 0.96;
-    const upper = midpoint * 1.04;
+    if (compCount >= 10 && compEstimate > 0) {
+      const blendedMid = 0.7 * compEstimate + 0.3 * heuristic.suggested;
+      const adjMid = blendedMid * heuristic.conditionFactor;
+      suggested = Math.round(adjMid);
+      rangeLower = Math.round(adjMid * 0.96);
+      rangeUpper = Math.round(adjMid * 1.04);
+      note = `Live comps blended (${compCount} comps)`;
+    } else if (compCount >= 3 && compEstimate > 0) {
+      const blendedMid = 0.5 * compEstimate + 0.5 * heuristic.suggested;
+      const adjMid = blendedMid * heuristic.conditionFactor;
+      suggested = Math.round(adjMid);
+      rangeLower = Math.round(adjMid * 0.95);
+      rangeUpper = Math.round(adjMid * 1.05);
+      note = `Limited comps blended (${compCount} comps)`;
+    }
 
-    const suggested = Math.round((lower + upper) / 2);
-
-    let pricingStatus: "under" | "over" | "within" = "within";
+    let status: "under" | "over" | "within" = "within";
     let delta = 0;
     if (inputs.currentRent) {
       delta = inputs.currentRent - suggested;
-      if (delta <= -75) pricingStatus = "under";
-      else if (delta >= 75) pricingStatus = "over";
+      if (delta <= -75) status = "under";
+      else if (delta >= 75) status = "over";
     }
 
     const competition =
-      suggested < 1600 ? "Medium" : suggested < 2300 ? "Medium/High" : "High";
+      compCount > 25
+        ? "High"
+        : compCount >= 10
+          ? "Medium/High"
+          : heuristic.competition;
 
     return {
-      lower: Math.round(lower),
-      upper: Math.round(upper),
+      lower: rangeLower,
+      upper: rangeUpper,
       suggested,
-      status: pricingStatus,
+      status,
       delta,
       competition,
+      note,
+      comps: apiEstimate.data,
     };
-  }, [inputs]);
+  }, [apiEstimate, heuristic, inputs.currentRent, inputs.sqft]);
 
   return (
-    <main className="relative mx-auto max-w-6xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-16 md:px-6 md:py-16">
-      <section className="overflow-hidden rounded-[1.4rem] border border-rr-border-gray bg-cover bg-center bg-no-repeat shadow-[var(--shadow-card)]">
-        <div className="relative bg-gradient-to-br from-rr-hero-bg/92 via-rr-hero-bg-secondary/82 to-rr-hero-deepgreen/78 p-8 md:p-12">
-          <div className="space-y-6 text-white md:max-w-3xl">
-            <Eyebrow tone="dark">Rent Price Calculator</Eyebrow>
-            <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
-              Get a data-backed rent range in under a minute.
-            </h1>
-            <p className="text-sm leading-relaxed text-rr-hero-highlight/90">
-              Enter your basics—beds, baths, condition—and see a recommended range, suggested price, and whether you’re
-              under- or overpricing.
-            </p>
-          <div className="flex flex-wrap gap-3">
-            <PrimaryButton href="#tool" tone="hero">
-              Run the calculator
-            </PrimaryButton>
-            <GhostButton href="/property-management" tone="hero">
-              Talk with a pricing expert
-            </GhostButton>
-          </div>
+    <main
+      className="relative mx-auto w-full space-y-10 px-4 py-8 text-rr-text-primary md:px-6 md:py-10"
+      style={{ maxWidth: "1280px" }}
+    >
+      <section className="grid max-h-[340px] grid-cols-[1fr_300px] items-start gap-8 py-12">
+        <div className="space-y-4">
+          <Eyebrow>Rent Price Calculator</Eyebrow>
+          <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
+            Get a data-backed rent range in under a minute.
+          </h1>
+          <p className="max-w-xl text-sm leading-relaxed text-rr-text-primary/80">
+            Enter your basics—beds, baths, condition—and see a recommended range and under/overpricing.
+          </p>
+          <PrimaryButton href="#tool">Run the calculator</PrimaryButton>
         </div>
+        <div className="rounded-[12px] border border-rr-border-gray bg-rr-surface-offwhite p-4 shadow-[var(--shadow-soft)]">
+          <p className="text-sm font-semibold text-rr-text-primary">Quick facts</p>
+          <ul className="mt-3 space-y-2 text-sm text-rr-text-primary/75">
+            <li className="flex items-start gap-2">
+              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-success" />
+              <span>Pricing tweaks beat big swings after long vacancy.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-success" />
+              <span>Condition and parking meaningfully move the range.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-alert" />
+              <span>Overpricing often costs more than a modest price cut.</span>
+            </li>
+          </ul>
         </div>
       </section>
 
-      <section id="tool" className="grid gap-6 rounded-[1.4rem] border border-rr-border-gray bg-rr-surface-white p-6 shadow-[var(--shadow-card)] md:grid-cols-[1fr_0.95fr] md:p-8">
-        <div className="space-y-4">
-          <SectionHeader
-            eyebrow="Inputs"
-            title="Property details"
-            description="Plug in the essentials so we can estimate a realistic rent range."
-          />
-          <div className="grid gap-4 md:grid-cols-2">
-            <TextField
-              label="ZIP or neighborhood"
-              value={inputs.zip}
-              onChange={(zip) => setInputs((prev) => ({ ...prev, zip }))}
-              placeholder="e.g., 97202"
+      <section id="tool" className="grid grid-cols-[45%_55%] gap-8 py-8 md:py-10">
+        <div className="space-y-5">
+          <div className="space-y-4 rounded-[12px] border border-rr-border-gray bg-rr-surface-offwhite/60 p-5 shadow-[var(--shadow-soft)]">
+            <SectionHeader
+              eyebrow="Inputs"
+              title="Property details"
+              description="Plug in the essentials so we can estimate a realistic rent range."
             />
-            <SelectField
-              label="Property type"
-              value={inputs.propertyType}
-              onChange={(propertyType) => setInputs((prev) => ({ ...prev, propertyType }))}
-              options={propertyTypes}
-            />
-            <NumberField
-              label="Beds"
-              value={inputs.beds}
-              min={0}
-              max={8}
-              onChange={(beds) => setInputs((prev) => ({ ...prev, beds }))}
-            />
-            <NumberField
-              label="Baths"
-              value={inputs.baths}
-              min={0}
-              max={6}
-              step={0.5}
-              onChange={(baths) => setInputs((prev) => ({ ...prev, baths }))}
-            />
-            <NumberField
-              label="Square footage"
-              value={inputs.sqft}
-              min={300}
-              max={4500}
-              step={50}
-              onChange={(sqft) => setInputs((prev) => ({ ...prev, sqft }))}
-              helper="Optional but improves accuracy."
-            />
-            <NumberField
-              label="Current asking rent"
-              value={inputs.currentRent}
-              min={0}
-              max={8000}
-              step={25}
-              onChange={(currentRent) => setInputs((prev) => ({ ...prev, currentRent }))}
-              helper="We’ll show if that’s under/over market."
-            />
-          </div>
-          <div className="space-y-3 rounded-[1.05rem] border border-rr-border-gray bg-rr-surface-offwhite/70 p-4">
-            <label className="flex items-center justify-between text-sm font-semibold text-rr-text-primary">
-              Condition <span className="text-rr-text-primary/75">{conditionLabels[inputs.condition]}</span>
-            </label>
-            <input
-              type="range"
-              min={1}
-              max={5}
-              value={inputs.condition}
-              onChange={(e) => setInputs((prev) => ({ ...prev, condition: Number(e.target.value) }))}
-              className="w-full accent-rr-accent-gold"
-            />
-            <label className="flex items-center gap-3 text-sm font-semibold text-rr-text-primary">
-              <input
-                type="checkbox"
-                checked={inputs.parking}
-                onChange={(e) => setInputs((prev) => ({ ...prev, parking: e.target.checked }))}
-                className="h-4 w-4 rounded border-rr-border-gray text-rr-accent-darkteal focus:ring-rr-accent-darkteal"
+            <div className="grid grid-cols-2 gap-5">
+              <TextField
+                label="ZIP or neighborhood"
+                value={inputs.zip}
+                onChange={(zip) => setInputs((prev) => ({ ...prev, zip }))}
+                placeholder="e.g., 97202"
               />
-              Parking included
-            </label>
+              <SelectField
+                label="Property type"
+                value={inputs.propertyType}
+                onChange={(propertyType) => setInputs((prev) => ({ ...prev, propertyType }))}
+                options={propertyTypes}
+              />
+              <NumberField
+                label="Beds"
+                value={inputs.beds}
+                min={0}
+                max={8}
+                onChange={(beds) => setInputs((prev) => ({ ...prev, beds }))}
+              />
+              <NumberField
+                label="Baths"
+                value={inputs.baths}
+                min={0}
+                max={6}
+                step={0.5}
+                onChange={(baths) => setInputs((prev) => ({ ...prev, baths }))}
+              />
+              <NumberField
+                label="Square footage"
+                value={inputs.sqft}
+                min={300}
+                max={4500}
+                step={50}
+                onChange={(sqft) => setInputs((prev) => ({ ...prev, sqft }))}
+                helper="Optional but improves accuracy."
+              />
+              <NumberField
+                label="Current asking rent"
+                value={inputs.currentRent}
+                min={0}
+                max={8000}
+                step={25}
+                onChange={(currentRent) => setInputs((prev) => ({ ...prev, currentRent }))}
+                helper="We’ll show if that’s under/over market."
+              />
+            </div>
+            <div className="space-y-3 rounded-[12px] border border-rr-border-gray bg-rr-surface-white p-4">
+              <label className="flex items-center justify-between text-sm font-semibold text-rr-text-primary">
+                Condition <span className="text-rr-text-primary/75">{conditionLabels[inputs.condition]}</span>
+              </label>
+              <input
+                type="range"
+                min={1}
+                max={5}
+                value={inputs.condition}
+                onChange={(e) => setInputs((prev) => ({ ...prev, condition: Number(e.target.value) }))}
+                className="w-full accent-rr-accent-gold"
+              />
+              <label className="flex items-center gap-3 text-sm font-semibold text-rr-text-primary">
+                <input
+                  type="checkbox"
+                  checked={inputs.parking}
+                  onChange={(e) => setInputs((prev) => ({ ...prev, parking: e.target.checked }))}
+                  className="h-4 w-4 rounded border-rr-border-gray text-rr-accent-darkteal focus:ring-rr-accent-darkteal"
+                />
+                Parking included
+              </label>
+            </div>
           </div>
+
+          <FAQSection faqs={faqs} />
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           <SectionHeader
             eyebrow="Results"
             title="Recommended rent range"
             description="Instant range plus a suggested price based on condition and amenities."
           />
-          <div className="rounded-[1.1rem] border border-rr-rent-border bg-gradient-to-br from-rr-rent-grad-start via-rr-rent-peach/40 to-rr-rent-grad-end p-6 shadow-[var(--shadow-soft)]">
+          <div className="rounded-[12px] border border-rr-rent-border bg-gradient-to-br from-rr-rent-grad-start via-rr-rent-peach/40 to-rr-rent-grad-end p-6 shadow-[var(--shadow-soft)]">
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-rr-text-primary/70">Range</p>
               <span className="rounded-full bg-rr-accent-gold/25 px-3 py-1 text-[11px] font-semibold text-rr-accent-darkteal">
@@ -220,7 +308,7 @@ export default function RentPricingPage() {
             </p>
             <p className="text-sm text-rr-text-primary/70">Based on inputs for {inputs.beds}bd / {inputs.baths}ba in {inputs.zip || "your area"}.</p>
 
-            <div className="mt-6 space-y-2 rounded-[1rem] border border-rr-border-gray bg-rr-surface-white/80 p-4">
+            <div className="mt-6 space-y-2 rounded-[12px] border border-rr-border-gray bg-rr-surface-white/80 p-4">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-semibold text-rr-text-primary">Suggested price</p>
                 <StatusPill status={results.status} delta={results.delta} />
@@ -234,29 +322,27 @@ export default function RentPricingPage() {
                 <p className="text-sm text-rr-text-primary/75">Add your current asking rent to see under/overpricing.</p>
               )}
             </div>
-          </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
-            <InsightCard
-              title="Action"
-              items={[
-                results.status === "under"
-                  ? "You may be underpricing; test a bump toward the suggested price."
-                  : results.status === "over"
-                    ? "You may be overpricing; tighten toward the midpoint to cut vacancy."
-                    : "You’re within range; focus on marketing speed to reduce vacancy.",
-              ]}
-            />
-            <InsightCard
-              title="Next steps"
-              items={[
-                "Refresh photos + highlight amenities that match comps.",
-                "Re-check pricing monthly if days-on-market rise.",
-              ]}
-            />
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              <InsightCard
+                title="Action"
+                items={[
+                  results.status === "under"
+                    ? "You may be underpricing; test a bump toward the suggested price."
+                    : results.status === "over"
+                      ? "You may be overpricing; tighten toward the midpoint to cut vacancy."
+                      : "You’re within range; focus on marketing speed to reduce vacancy.",
+                ]}
+              />
+              <InsightCard
+                title="Next steps"
+                items={[
+                  "Refresh photos + highlight amenities that match comps.",
+                  "Re-check pricing monthly if days-on-market rise.",
+                ]}
+              />
+            </div>
           </div>
-
-          <FAQSection faqs={faqs} />
 
           <CTACluster />
         </div>
@@ -271,6 +357,53 @@ function formatCurrency(value: number) {
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+function computeHeuristic(inputs: Inputs) {
+  const base =
+    950 +
+    inputs.beds * 360 +
+    inputs.baths * 180 +
+    (inputs.sqft ? Math.min(inputs.sqft, 2500) * 0.65 : 0);
+
+  const typeAdjustment =
+    inputs.propertyType === "house"
+      ? 75
+      : inputs.propertyType === "condo"
+        ? -25
+        : inputs.propertyType === "duplex"
+          ? 0
+          : -50;
+
+  const conditionFactor = 0.86 + (inputs.condition - 3) * 0.06; // ~0.74–1.1
+  const parkingAdjustment = inputs.parking ? 85 : 0;
+  const midpoint = (base + typeAdjustment + parkingAdjustment) * conditionFactor;
+
+  const lower = midpoint * 0.96;
+  const upper = midpoint * 1.04;
+
+  const suggested = Math.round((lower + upper) / 2);
+
+  let pricingStatus: "under" | "over" | "within" = "within";
+  let delta = 0;
+  if (inputs.currentRent) {
+    delta = inputs.currentRent - suggested;
+    if (delta <= -75) pricingStatus = "under";
+    else if (delta >= 75) pricingStatus = "over";
+  }
+
+  const competition =
+    suggested < 1600 ? "Medium" : suggested < 2300 ? "Medium/High" : "High";
+
+  return {
+    lower: Math.round(lower),
+    upper: Math.round(upper),
+    suggested,
+    status: pricingStatus,
+    delta,
+    competition,
+    conditionFactor,
+  };
 }
 
 function Eyebrow({ children, tone = "light" }: { children: ReactNode; tone?: "light" | "dark" }) {

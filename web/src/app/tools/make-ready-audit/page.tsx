@@ -88,87 +88,88 @@ export default function MoveInReadinessPage() {
   };
 
   return (
-    <main className="relative mx-auto max-w-6xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-16 md:px-6 md:py-16">
-      <section className="overflow-hidden rounded-[1.4rem] border border-rr-border-gray bg-rr-surface-white shadow-[var(--shadow-card)]">
-        <div className="grid gap-8 p-8 md:grid-cols-[1.1fr_0.9fr] md:p-12">
-          <div className="space-y-6">
-            <Eyebrow>Move-In Readiness Checklist</Eyebrow>
-            <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
-              Quick readiness score—no overwhelming checklist.
-            </h1>
-            <p className="max-w-2xl text-sm leading-relaxed text-rr-text-primary/80">
-              Check the essentials across safety, cosmetic, and systems. See what’s left, a rough time estimate, and the
-              biggest blockers for move-in.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <PrimaryButton href="#tool">Check readiness</PrimaryButton>
-              <GhostButton href="/property-management">Book a make-ready walkthrough</GhostButton>
-            </div>
-          </div>
-          <div className="rounded-[1.1rem] border border-rr-border-gray bg-rr-surface-offwhite p-6 shadow-[var(--shadow-soft)]">
-            <p className="text-sm font-semibold text-rr-text-primary">What this covers</p>
-            <ul className="mt-3 space-y-2 text-sm text-rr-text-primary/75">
-              <li className="flex items-start gap-2">
-                <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-success" />
-                <span>Life-safety basics: locks, detectors, trip hazards.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-success" />
-                <span>Cosmetic issues that create move-in complaints.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-success" />
-                <span>Systems you should test before showing and move-in.</span>
-              </li>
-            </ul>
-          </div>
+    <main
+      className="relative mx-auto w-full space-y-10 px-4 py-8 text-rr-text-primary md:px-6 md:py-10"
+      style={{ maxWidth: "1280px" }}
+    >
+      <section className="grid max-h-[340px] grid-cols-[1fr_300px] items-start gap-8 py-12">
+        <div className="space-y-4">
+          <Eyebrow>Move-In Readiness Checklist</Eyebrow>
+          <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
+            Quick readiness score—no overwhelming checklist.
+          </h1>
+          <p className="max-w-xl text-sm leading-relaxed text-rr-text-primary/80">
+            Check safety, cosmetic, and systems essentials. See what’s left and how long it might take.
+          </p>
+          <PrimaryButton href="#tool">Check readiness</PrimaryButton>
+        </div>
+        <div className="rounded-[12px] border border-rr-border-gray bg-rr-surface-offwhite p-4 shadow-[var(--shadow-soft)]">
+          <p className="text-sm font-semibold text-rr-text-primary">What this covers</p>
+          <ul className="mt-3 space-y-2 text-sm text-rr-text-primary/75">
+            <li className="flex items-start gap-2">
+              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-success" />
+              <span>Life-safety basics: locks, detectors, trip hazards.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-success" />
+              <span>Cosmetic issues that create move-in complaints.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-success" />
+              <span>Systems to test before showings and move-in.</span>
+            </li>
+          </ul>
         </div>
       </section>
 
       <section
         id="tool"
-        className="grid gap-6 rounded-[1.4rem] border border-rr-border-gray bg-rr-surface-white p-6 shadow-[var(--shadow-card)] md:grid-cols-[1fr_0.95fr] md:p-8"
+        className="grid grid-cols-[45%_55%] gap-8 py-8 md:py-10"
       >
-        <div className="space-y-4">
-          <SectionHeader
-            eyebrow="Checklist"
-            title="Tap through the essentials"
-            description="Grouped by safety, cosmetic, and systems so you don’t miss the critical items."
-          />
-          <div className="space-y-4">
-            {["Safety", "Cosmetic", "Systems"].map((category) => (
-              <div key={category} className="space-y-3 rounded-[1.05rem] border border-rr-border-gray bg-rr-surface-offwhite/70 p-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-rr-text-primary">{category}</p>
-                  <ProgressBar percent={categoryProgress.find((c) => c.category === category)?.percent || 0} />
+        <div className="space-y-5">
+          <div className="space-y-4 rounded-[12px] border border-rr-border-gray bg-rr-surface-offwhite/60 p-5 shadow-[var(--shadow-soft)]">
+            <SectionHeader
+              eyebrow="Checklist"
+              title="Tap through the essentials"
+              description="Grouped by safety, cosmetic, and systems so you don’t miss the critical items."
+            />
+            <div className="space-y-4">
+              {["Safety", "Cosmetic", "Systems"].map((category) => (
+                <div key={category} className="space-y-3 rounded-[12px] border border-rr-border-gray bg-rr-surface-white p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold text-rr-text-primary">{category}</p>
+                    <ProgressBar percent={categoryProgress.find((c) => c.category === category)?.percent || 0} />
+                  </div>
+                  <div className="space-y-2">
+                    {items
+                      .filter((item) => item.category === category)
+                      .map((item) => (
+                        <label key={item.id} className="flex items-start gap-3 rounded-lg bg-rr-surface-offwhite/60 px-3 py-2 text-sm font-medium text-rr-text-primary shadow-[var(--shadow-soft)]">
+                          <input
+                            type="checkbox"
+                            className="mt-0.5 h-4 w-4 rounded border-rr-border-gray text-rr-accent-darkteal focus:ring-rr-accent-darkteal"
+                            checked={checked.has(item.id)}
+                            onChange={() => toggleItem(item.id)}
+                          />
+                          <span className="leading-relaxed text-rr-text-primary/80">{item.label}</span>
+                        </label>
+                      ))}
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  {items
-                    .filter((item) => item.category === category)
-                    .map((item) => (
-                      <label key={item.id} className="flex items-start gap-3 rounded-lg bg-rr-surface-white px-3 py-2 text-sm font-medium text-rr-text-primary shadow-[var(--shadow-soft)]">
-                        <input
-                          type="checkbox"
-                          className="mt-0.5 h-4 w-4 rounded border-rr-border-gray text-rr-accent-darkteal focus:ring-rr-accent-darkteal"
-                          checked={checked.has(item.id)}
-                          onChange={() => toggleItem(item.id)}
-                        />
-                        <span className="leading-relaxed text-rr-text-primary/80">{item.label}</span>
-                      </label>
-                    ))}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+
+          <FAQSection faqs={faqs} />
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           <SectionHeader
             eyebrow="Results"
             title="Move-in readiness score"
             description="We translate your checks into a score and an estimated effort to finish."
           />
-          <div className="rounded-[1.1rem] border border-rr-border-gray bg-gradient-to-br from-rr-rent-grad-start via-rr-rent-peach/35 to-rr-rent-grad-end p-6 shadow-[var(--shadow-soft)]">
+          <div className="rounded-[12px] border border-rr-border-gray bg-gradient-to-br from-rr-rent-grad-start via-rr-rent-peach/35 to-rr-rent-grad-end p-6 shadow-[var(--shadow-soft)]">
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-rr-text-primary/70">Overall</p>
               <span className="rounded-full bg-rr-accent-gold/25 px-3 py-1 text-[11px] font-semibold text-rr-accent-darkteal">
@@ -179,27 +180,25 @@ export default function MoveInReadinessPage() {
             <p className="text-sm text-rr-text-primary/75">
               {checked.size} of {items.length} items done. About {remainingHours.toFixed(1)} hours of work remaining.
             </p>
-          </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
-            <InsightCard
-              title="What’s left"
-              items={
-                remainingItems.length
-                  ? remainingItems.slice(0, 3).map((item) => item.label)
-                  : ["Nothing major left—schedule final walkthrough."]
-              }
-            />
-            <InsightCard
-              title="Focus areas"
-              items={[
-                "Fix safety blockers first to avoid move-in delays.",
-                "Batch cosmetic touch-ups; photograph after completion.",
-              ]}
-            />
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              <InsightCard
+                title="What’s left"
+                items={
+                  remainingItems.length
+                    ? remainingItems.slice(0, 3).map((item) => item.label)
+                    : ["Nothing major left—schedule final walkthrough."]
+                }
+              />
+              <InsightCard
+                title="Focus areas"
+                items={[
+                  "Fix safety blockers first to avoid move-in delays.",
+                  "Batch cosmetic touch-ups; photograph after completion.",
+                ]}
+              />
+            </div>
           </div>
-
-          <FAQSection faqs={faqs} />
 
           <CTACluster />
         </div>
