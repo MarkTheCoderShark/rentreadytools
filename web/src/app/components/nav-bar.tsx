@@ -35,7 +35,7 @@ export default function NavBar() {
           className="flex items-center gap-2 font-semibold tracking-tight"
           aria-label="RentReadyTools home"
         >
-          <span className="h-9 w-9 rounded-xl bg-rr-accent-darkteal/15 text-center text-lg leading-9 text-rr-text-primary ring-1 ring-rr-border-gray">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-rr-accent-darkteal text-center text-lg leading-9 text-white ring-1 ring-rr-border-gray">
             RR
           </span>
           <span className="text-rr-text-primary">
@@ -46,7 +46,7 @@ export default function NavBar() {
           {links.map((link) => (
             <Link
               key={link.href}
-              className="text-rr-text-primary transition hover:text-rr-accent-darkteal"
+              className={`transition hover:text-rr-accent-darkteal ${link.label === "Tools" ? "text-rr-accent-gold" : "text-rr-text-primary"}`}
               href={link.href}
             >
               {link.label}
