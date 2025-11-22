@@ -66,7 +66,7 @@ Tone Do/Don’t:
   /tools/
     /tools/rent-estimate-calculator
     /tools/vacancy-rate-calculator
-    /tools/make-ready-audit
+    /tools/move-in-checklist
     /tools/renovation-roi
   /turnover/
     /turnover/guide
@@ -190,7 +190,7 @@ Suggested sitemap:
 /tools/
 /tools/rent-estimate-calculator
 /tools/vacancy-rate-calculator
-/tools/make-ready-audit
+/tools/move-in-checklist
 /tools/renovation-roi
 /turnover/
 /turnover/how-long-should-turnover-take

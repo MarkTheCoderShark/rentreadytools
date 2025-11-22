@@ -17,7 +17,7 @@ const tools = [
   {
     name: "Move-In Readiness Checklist",
     description: "Check readiness in under 2 minutes and avoid move-in surprises.",
-    href: "/tools/make-ready-audit",
+    href: "/tools/move-in-checklist",
   },
   {
     name: "Rental Renovation ROI Calculator",
