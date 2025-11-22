@@ -325,7 +325,9 @@ export default function RentPricingPage() {
             <p className="mt-2 text-3xl font-semibold text-rr-text-primary">
               {formatCurrency(results.lower)} – {formatCurrency(results.upper)}
             </p>
-            <p className="text-sm text-rr-text-primary/70">Based on inputs for {inputs.beds}bd / {inputs.baths}ba in {inputs.address || "your area"}.</p>
+            <p className="text-sm text-rr-text-primary/70">
+              Based on inputs for {inputs.beds}bd / {inputs.baths}ba at {inputs.address || "your address"}.
+            </p>
 
             <div className="mt-6 space-y-2 rounded-[12px] border border-rr-border-gray bg-rr-surface-white/80 p-4">
               <div className="flex items-center justify-between">
