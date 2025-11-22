@@ -321,6 +321,7 @@ export default function RentPricingPage() {
               ) : (
                 <p className="text-sm text-rr-text-primary/75">Add your current asking rent to see under/overpricing.</p>
               )}
+              <CompMeta results={results} />
             </div>
 
             <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -404,6 +405,33 @@ function computeHeuristic(inputs: Inputs) {
     competition,
     conditionFactor,
   };
+}
+
+function CompMeta({
+  results,
+}: {
+  results: ReturnType<typeof computeHeuristic> & {
+    note?: string;
+    comps?: { compsCount?: number; medianRent?: number; medianRentPerSqft?: number };
+  };
+}) {
+  const compsCount = results.comps?.compsCount ?? 0;
+  const medianRent = results.comps?.medianRent ?? 0;
+  if (results.note === "Heuristic estimate" && compsCount === 0) {
+    return <p className="text-xs text-rr-text-primary/65">Using heuristic estimate (no live comps yet).</p>;
+  }
+  return (
+    <div className="text-xs text-rr-text-primary/70">
+      <p className="font-semibold text-rr-text-primary/80">
+        {results.note || "Estimate source"}
+      </p>
+      <p>
+        {compsCount > 0
+          ? `Comps: ${compsCount} found. Median rent ${formatCurrency(medianRent)}.`
+          : "Fetching live comps..."}
+      </p>
+    </div>
+  );
 }
 
 function Eyebrow({ children, tone = "light" }: { children: ReactNode; tone?: "light" | "dark" }) {
