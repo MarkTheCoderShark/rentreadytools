@@ -692,10 +692,12 @@ function PrimaryButton({
   href,
   children,
   tone = "light",
+  onClick,
 }: {
   href: string;
   children: ReactNode;
   tone?: "light" | "hero";
+  onClick?: (e: React.MouseEvent) => void;
 }) {
   const styles =
     tone === "hero"
@@ -705,6 +707,7 @@ function PrimaryButton({
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold shadow-[0_12px_30px_-16px_rgba(0,0,0,0.35)] transition hover:-translate-y-0.5 ${styles}`}
     >
       {children}
