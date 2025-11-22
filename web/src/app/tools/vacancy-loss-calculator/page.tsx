@@ -4,6 +4,27 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
+type FAQ = { question: string; answer: string };
+
+const faqs: FAQ[] = [
+  {
+    question: "What’s a normal vacancy rate?",
+    answer: "Aim for roughly 5–7 days per turnover in balanced markets. Anything over 10–14 days is usually a signal to fix pricing or process.",
+  },
+  {
+    question: "Should I count my own time as a cost?",
+    answer: "Yes. Showings, cleaning, and coordination are hours you could spend elsewhere. Putting a dollar value to your time shows the true cost.",
+  },
+  {
+    question: "How do I lower vacancy without just dropping rent?",
+    answer: "List earlier, improve photos, reply fast to inquiries, and tighten make-ready timelines. Small pricing adjustments beat big last-minute drops.",
+  },
+  {
+    question: "Does this include the cost of repairs?",
+    answer: "This calculator focuses on time and missed rent. You can add repair costs separately when modeling ROI or include them in your hourly value.",
+  },
+];
+
 export default function VacancyCostPage() {
   const [inputs, setInputs] = useState({
     monthlyRent: 2100,
@@ -37,126 +58,119 @@ export default function VacancyCostPage() {
   }, [inputs]);
 
   return (
-    <main className="relative mx-auto max-w-6xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-16 md:px-6 md:py-16">
-      <section className="overflow-hidden rounded-[1.4rem] border border-rr-border-gray bg-rr-surface-white shadow-[var(--shadow-card)]">
-        <div className="relative grid gap-8 p-8 md:grid-cols-[1.1fr_0.9fr] md:p-12">
-          <div className="space-y-6">
-            <Eyebrow>Vacancy Cost Calculator</Eyebrow>
-            <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
-              See how much vacancy is costing you—cash and time.
-            </h1>
-            <p className="max-w-2xl text-sm leading-relaxed text-rr-text-primary/80">
-              Count every empty day and your own labor. Model what happens if you trim 5–10 days off turnover.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <PrimaryButton href="#tool">Calculate vacancy cost</PrimaryButton>
-              <GhostButton href="/property-management">See how we cut vacancy</GhostButton>
-            </div>
-          </div>
-          <div className="rounded-[1.1rem] border border-rr-border-gray bg-rr-surface-offwhite p-6 shadow-[var(--shadow-soft)]">
-            <p className="text-sm font-semibold text-rr-text-primary">Quick facts</p>
-            <ul className="mt-3 space-y-2 text-sm text-rr-text-primary/75">
-              <li className="flex items-start gap-2">
-                <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-alert" />
-                <span>Every 7 extra vacant days ≈ 23% of one month’s rent.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-alert" />
-                <span>Your time is part of the loss—showings, cleaning, coordination.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-success" />
-                <span>Shaving 5–10 days often pays for pro management.</span>
-              </li>
-            </ul>
-          </div>
+    <main
+      className="relative mx-auto w-full space-y-10 px-4 py-8 text-rr-text-primary md:px-6 md:py-10"
+      style={{ maxWidth: "1280px" }}
+    >
+      <section className="grid max-h-[340px] grid-cols-[1fr_300px] items-start gap-8 py-12">
+        <div className="space-y-4">
+          <Eyebrow>Vacancy Cost Calculator</Eyebrow>
+          <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
+            See how much vacancy is costing you
+          </h1>
+          <p className="max-w-xl text-sm leading-relaxed text-rr-text-primary/80">
+            Count every empty day and your own time—get the total loss instantly.
+          </p>
+          <PrimaryButton href="#tool">Calculate vacancy cost</PrimaryButton>
+        </div>
+        <div className="rounded-[12px] border border-rr-border-gray bg-rr-surface-offwhite p-4 shadow-[var(--shadow-soft)]">
+          <p className="text-sm font-semibold text-rr-text-primary">Quick facts</p>
+          <ul className="mt-3 space-y-2 text-sm text-rr-text-primary/75">
+            <li className="flex items-start gap-2">
+              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-alert" />
+              <span>Every 7 extra vacant days ≈ 23% of one month’s rent.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-alert" />
+              <span>Your time is part of the loss—showings, cleaning, coordination.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-1 h-2.5 w-2.5 rounded-full bg-rr-status-success" />
+              <span>Shaving 5–10 days often pays for pro management.</span>
+            </li>
+          </ul>
         </div>
       </section>
 
       <section
         id="tool"
-        className="grid gap-6 rounded-[1.4rem] border border-rr-border-gray bg-rr-surface-white p-6 shadow-[var(--shadow-card)] md:grid-cols-[1fr_0.95fr] md:p-8"
+        className="grid grid-cols-[45%_55%] gap-8 py-8 md:py-10"
       >
-        <div className="space-y-4">
-          <SectionHeader eyebrow="Inputs" title="Your turnover details" />
-          <div className="grid gap-4 md:grid-cols-2">
-            <NumberField
-              label="Monthly rent"
-              prefix="$"
-              value={inputs.monthlyRent}
-              min={0}
-              max={10000}
-              step={25}
-              onChange={(monthlyRent) => setInputs((prev) => ({ ...prev, monthlyRent }))}
-            />
-            <NumberField
-              label="Days vacant"
-              value={inputs.daysVacant}
-              min={0}
-              max={120}
-              step={1}
-              onChange={(daysVacant) => setInputs((prev) => ({ ...prev, daysVacant }))}
-            />
-            <NumberField
-              label="Your hourly value"
-              prefix="$"
-              value={inputs.hourlyValue}
-              min={0}
-              max={500}
-              step={5}
-              onChange={(hourlyValue) => setInputs((prev) => ({ ...prev, hourlyValue }))}
-              helper="Think of what your time is worth."
-            />
-            <NumberField
-              label="Hours spent on turnover tasks"
-              value={inputs.hoursSpent}
-              min={0}
-              max={120}
-              step={1}
-              onChange={(hoursSpent) => setInputs((prev) => ({ ...prev, hoursSpent }))}
-              helper="Cleaning, coordinating, showings, marketing."
-            />
+        <div className="space-y-5">
+          <div className="space-y-4 rounded-[12px] border border-rr-border-gray bg-rr-surface-offwhite/60 p-5 shadow-[var(--shadow-soft)]">
+            <SectionHeader eyebrow="Inputs" title="Your turnover details" />
+            <div className="grid grid-cols-2 gap-5">
+              <NumberField
+                label="Monthly rent"
+                prefix="$"
+                value={inputs.monthlyRent}
+                min={0}
+                max={10000}
+                step={25}
+                onChange={(monthlyRent) => setInputs((prev) => ({ ...prev, monthlyRent }))}
+              />
+              <NumberField
+                label="Days vacant"
+                value={inputs.daysVacant}
+                min={0}
+                max={120}
+                step={1}
+                onChange={(daysVacant) => setInputs((prev) => ({ ...prev, daysVacant }))}
+              />
+              <NumberField
+                label="Your hourly value"
+                prefix="$"
+                value={inputs.hourlyValue}
+                min={0}
+                max={500}
+                step={5}
+                onChange={(hourlyValue) => setInputs((prev) => ({ ...prev, hourlyValue }))}
+                helper="Think of what your time is worth."
+              />
+              <NumberField
+                label="Hours spent on tasks"
+                value={inputs.hoursSpent}
+                min={0}
+                max={120}
+                step={1}
+                onChange={(hoursSpent) => setInputs((prev) => ({ ...prev, hoursSpent }))}
+                helper="Cleaning, coordinating, showings, marketing."
+              />
+            </div>
           </div>
+
+          <FAQSection faqs={faqs} />
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           <SectionHeader
             eyebrow="Results"
             title="Total vacancy cost"
             description="Missed rent plus the value of your time."
           />
-          <div className="rounded-[1.1rem] border border-rr-border-gray bg-rr-surface-offwhite p-6 shadow-[var(--shadow-soft)]">
+
+          <div className="rounded-[12px] border border-rr-border-gray bg-rr-surface-white p-6 shadow-[var(--shadow-soft)]">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-rr-text-primary/70">Total loss</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-rr-text-primary/70">Estimated total loss</p>
               <span className="rounded-full bg-rr-status-alert/15 px-3 py-1 text-[11px] font-semibold text-rr-status-alert">
                 {results.pctOfMonth.toFixed(1)}% of a month
               </span>
             </div>
-            <p className="mt-2 text-3xl font-semibold text-rr-text-primary">{formatCurrency(results.total)}</p>
+            <p className="mt-2 text-[30px] font-bold leading-tight text-rr-text-primary">{formatCurrency(results.total)}</p>
             <p className="text-sm text-rr-text-primary/70">
               Includes {formatCurrency(results.missedRent)} missed rent + {formatCurrency(results.laborCost)} for your time.
             </p>
 
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
-              <Metric label="Daily rent" value={formatCurrency(results.dailyRent)} />
-              <Metric label="Value of your time" value={formatCurrency(results.laborCost)} />
+            <div className="mt-4 grid grid-cols-3 gap-4">
+              <Metric label="Daily rent loss" value={formatCurrency(results.dailyRent)} />
               <Metric label="Missed rent" value={formatCurrency(results.missedRent)} />
+              <Metric label="Value of your time" value={formatCurrency(results.laborCost)} />
             </div>
-          </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
-            <ScenarioCard
-              title="Trim 5 days"
-              days={results.trimmed5.newDays}
-              savings={results.trimmed5.savings}
-              monthlyRent={inputs.monthlyRent}
-            />
-            <ScenarioCard
-              title="Trim 10 days"
-              days={results.trimmed10.newDays}
-              savings={results.trimmed10.savings}
-              monthlyRent={inputs.monthlyRent}
-            />
+            <div className="mt-4 grid grid-cols-2 gap-4">
+              <ScenarioCard title="Trim 5 days" savings={results.trimmed5.savings} />
+              <ScenarioCard title="Trim 10 days" savings={results.trimmed10.savings} />
+            </div>
           </div>
 
           <CTACluster />
@@ -248,54 +262,167 @@ function Metric({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ScenarioCard({
-  title,
-  days,
-  savings,
-  monthlyRent,
-}: {
-  title: string;
-  days: number;
-  savings: number;
-  monthlyRent: number;
-}) {
-  const pct = monthlyRent ? (savings / monthlyRent) * 100 : 0;
+function ScenarioCard({ title, savings }: { title: string; savings: number }) {
   return (
-    <div className="rounded-[1rem] border border-rr-border-gray bg-rr-surface-offwhite/60 p-4 shadow-[var(--shadow-soft)]">
+    <div className="rounded-[12px] border border-rr-border-gray bg-rr-surface-offwhite/60 p-4 shadow-[var(--shadow-soft)]">
       <div className="flex items-center justify-between">
         <p className="text-sm font-semibold text-rr-text-primary">{title}</p>
-        <span className="rounded-full bg-rr-status-success/20 px-3 py-1 text-[11px] font-semibold text-rr-tool-darkteal">
-          -{title.replace(/\D/g, "") || "5"} days
-        </span>
       </div>
-      <p className="mt-2 text-2xl font-semibold text-rr-text-primary">{formatCurrency(savings)}</p>
-      <p className="text-sm text-rr-text-primary/75">Saved vs current vacancy ({pct.toFixed(1)}% of one month).</p>
-      <p className="mt-2 text-xs text-rr-text-primary/65">New days vacant: {days}.</p>
+      <p className="mt-2 text-xl font-semibold text-rr-text-primary">{formatCurrency(savings)}</p>
+      <p className="text-sm text-rr-text-primary/75">Savings if you trim {title.replace(/\D/g, "") || "5"} days.</p>
+    </div>
+  );
+}
+
+function FAQSection({ faqs }: { faqs: FAQ[] }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
+
+  return (
+    <div className="space-y-3 rounded-[1.1rem] border border-rr-border-gray bg-rr-surface-white p-4 shadow-[var(--shadow-soft)]">
+      <p className="text-sm font-semibold text-rr-text-primary">FAQ</p>
+      <div className="space-y-3">
+        {faqs.map((faq) => (
+          <div key={faq.question} className="space-y-1 rounded-lg bg-rr-surface-offwhite/60 p-3">
+            <p className="text-sm font-semibold text-rr-text-primary">{faq.question}</p>
+            <p className="text-sm text-rr-text-primary/75">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
     </div>
   );
 }
 
 function CTACluster() {
+  const [mode, setMode] = useState<"idle" | "form" | "loading" | "success" | "error">("idle");
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [zip, setZip] = useState("");
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!email.trim()) {
+      setError("Please enter an email.");
+      return;
+    }
+    setError(null);
+    setMode("loading");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: "Vacancy Plan Request",
+          email,
+          reason: "Vacancy plan unlock",
+          message: `Please send the local DOM and vacancy plan.${zip ? ` ZIP: ${zip}` : ""}`,
+          source: "vacancy-cta",
+        }),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to send. Please try again.");
+      }
+      setMode("success");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to send. Please try again.");
+      setMode("error");
+    }
+  };
+
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-[1.1rem] border border-rr-border-gray bg-rr-surface-offwhite/80 p-4">
-      <div className="space-y-1 text-sm text-rr-text-primary/80">
-        <p className="font-semibold text-rr-text-primary">Want to cut vacancy faster?</p>
-        <p>We’ll share our average days-on-market and a plan for your property.</p>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        <PrimaryButton href="/contact?reason=Vacancy%20Cost%20Calculator&source=vacancy-cost-calculator">
-          Request a vacancy review
-        </PrimaryButton>
-        <GhostButton href="/property-management">See property management services</GhostButton>
-      </div>
+    <div className="mt-8 space-y-4 rounded-[12px] bg-[#F7F6F4] p-8 text-center shadow-[var(--shadow-soft)]">
+      <h3 className="text-xl font-semibold text-rr-text-primary">Want to cut vacancy faster?</h3>
+      <p className="text-sm text-rr-text-primary/75">Unlock your local average days-on-market & a plan.</p>
+      {mode === "idle" ? (
+        <>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <PrimaryButton href="#" onClick={(e) => { e.preventDefault(); setMode("form"); }}>
+              Get my vacancy plan
+            </PrimaryButton>
+            <GhostButton href="/property-management">See property management services →</GhostButton>
+          </div>
+          <div className="mt-2 text-sm text-rr-text-primary/70">
+            <span className="mr-1">🔒</span>
+            Average days-on-market in your area: 21–27 days (locked)
+          </div>
+        </>
+      ) : mode === "success" ? (
+        <div className="space-y-3">
+          <p className="text-lg font-semibold text-rr-text-primary">Your plan is on the way!</p>
+          <p className="text-sm text-rr-text-primary/75">
+            We’ll email your local DOM and vacancy recommendations shortly.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <PrimaryButton href="/contact?reason=Vacancy%20Plan%20Follow-up&source=vacancy-cta-success">
+              Book a call
+            </PrimaryButton>
+            <GhostButton href="/property-management">View PM services →</GhostButton>
+          </div>
+        </div>
+      ) : (
+        <form className="space-y-3" onSubmit={handleSubmit}>
+          <p className="text-sm font-semibold text-rr-text-primary">Enter your email to unlock your plan:</p>
+          <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-center md:justify-center">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full rounded-full border border-rr-border-gray bg-white px-4 py-2.5 text-sm font-medium text-rr-text-primary shadow-[var(--shadow-soft)] focus:border-rr-accent-darkteal focus:outline-none"
+            />
+            <button
+              type="submit"
+              disabled={mode === "loading"}
+              className="inline-flex items-center justify-center rounded-full bg-rr-accent-gold px-5 py-2.5 text-sm font-semibold text-rr-hero-bg shadow-[0_12px_30px_-16px_rgba(0,0,0,0.35)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {mode === "loading" ? "Sending..." : "Continue →"}
+            </button>
+          </div>
+          <div className="grid gap-2 md:grid-cols-[220px_1fr] md:items-center md:justify-center">
+            <div className="space-y-1">
+              <label className="text-sm font-semibold text-rr-text-primary">ZIP code (optional)</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="\\d*"
+                maxLength={10}
+                placeholder="e.g., 97202"
+                className="w-full rounded-full border border-rr-border-gray bg-white px-4 py-2.5 text-sm font-medium text-rr-text-primary shadow-[var(--shadow-soft)] focus:border-rr-accent-darkteal focus:outline-none"
+                value={zip}
+                onChange={(e) => setZip(e.target.value)}
+              />
+            </div>
+            <p className="text-xs text-rr-text-primary/65">Optional — helps us generate local DOM accuracy.</p>
+          </div>
+          {error ? <p className="text-sm text-rr-status-alert">{error}</p> : null}
+          <p className="text-xs text-rr-text-primary/65">No spam. We only send your vacancy report.</p>
+          <div className="text-sm text-rr-text-primary/70">
+            <span className="mr-1">🔒</span>
+            Unlocking: Local DOM + personalized recommendations
+          </div>
+        </form>
+      )}
     </div>
   );
 }
 
-function PrimaryButton({ href, children }: { href: string; children: ReactNode }) {
+function PrimaryButton({ href, children, onClick }: { href: string; children: ReactNode; onClick?: (e: React.MouseEvent) => void }) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       className="inline-flex items-center justify-center gap-2 rounded-full bg-rr-accent-gold px-5 py-3 text-sm font-semibold text-rr-hero-bg shadow-[0_12px_30px_-16px_rgba(0,0,0,0.35)] transition hover:-translate-y-0.5"
     >
       {children}

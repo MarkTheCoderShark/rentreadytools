@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ContactForm from "./components/contact-form";
 
 const steps = [
   {
@@ -321,7 +322,7 @@ export default function Home() {
       </section>
 
       <section className="overflow-hidden rounded-[1.5rem] border border-rr-bottomcta-border/70 bg-rr-bottomcta-bg p-7 shadow-[var(--shadow-card)] md:p-10">
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div className="grid gap-6 md:grid-cols-[1.05fr_0.95fr] md:items-center">
           <div className="space-y-3 text-white">
             <Eyebrow tone="dark">Need a partner?</Eyebrow>
             <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
@@ -331,14 +332,14 @@ export default function Home() {
               Send us the basics—address, bed/bath, condition—and we’ll reply with a custom rent benchmark and plan to
               cut vacancy.
             </p>
+            <div className="flex flex-wrap gap-3">
+              <GhostButton href="/property-management" tone="hero">
+                See how we work
+              </GhostButton>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <PrimaryButton href="/contact" tone="bottom">
-              Request a free rental analysis
-            </PrimaryButton>
-            <GhostButton href="/property-management" tone="bottom">
-              See how we work
-            </GhostButton>
+          <div className="rounded-[1.1rem] bg-white/92 p-1 shadow-[var(--shadow-card)] backdrop-blur">
+            <ContactForm defaultReason="Free rental analysis" defaultSource="homepage-bottom-cta" />
           </div>
         </div>
       </section>

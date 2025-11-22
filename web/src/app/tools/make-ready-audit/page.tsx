@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
+type FAQ = { question: string; answer: string };
 
 type Item = {
   id: string;
@@ -23,6 +24,25 @@ const items: Item[] = [
   { id: "water", label: "No active leaks; water heater at safe temp", category: "Systems" },
   { id: "appliances", label: "Appliances cleaned and working", category: "Systems" },
   { id: "plumbing", label: "Sinks/tubs drain well; no running toilets", category: "Systems" },
+];
+
+const faqs: FAQ[] = [
+  {
+    question: "Does this replace a professional inspection?",
+    answer: "No. It’s a readiness checklist to prevent move-in issues. You should still comply with local safety/inspection rules.",
+  },
+  {
+    question: "How is the score calculated?",
+    answer: "Each essential item is worth equal points across safety, cosmetic, and systems. Checked items raise the score toward 100.",
+  },
+  {
+    question: "What’s a good readiness score to list the property?",
+    answer: "Aim for 80%+ before marketing photos/showings. Under 70% often leads to complaints, concessions, or delays.",
+  },
+  {
+    question: "What if I’m short on time?",
+    answer: "Prioritize safety (locks, detectors, trip hazards) first, then high-visibility cosmetic fixes. If still tight, book a make-ready crew.",
+  },
 ];
 
 export default function MoveInReadinessPage() {
@@ -179,6 +199,8 @@ export default function MoveInReadinessPage() {
             />
           </div>
 
+          <FAQSection faqs={faqs} />
+
           <CTACluster />
         </div>
       </section>
@@ -231,10 +253,40 @@ function InsightCard({ title, items }: { title: string; items: string[] }) {
         {items.map((item) => (
           <li key={item} className="flex items-start gap-2">
             <span className="mt-1 inline-block h-2 w-2 rounded-full bg-rr-tool-teal" />
-            <span>{item}</span>
+            <span className="text-rr-text-primary/75">{item}</span>
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+function FAQSection({ faqs }: { faqs: FAQ[] }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
+
+  return (
+    <div className="space-y-3 rounded-[1.1rem] border border-rr-border-gray bg-rr-surface-white p-4 shadow-[var(--shadow-soft)]">
+      <p className="text-sm font-semibold text-rr-text-primary">FAQ</p>
+      <div className="space-y-3">
+        {faqs.map((faq) => (
+          <div key={faq.question} className="space-y-1 rounded-lg bg-rr-surface-offwhite/60 p-3">
+            <p className="text-sm font-semibold text-rr-text-primary">{faq.question}</p>
+            <p className="text-sm text-rr-text-primary/75">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
     </div>
   );
 }

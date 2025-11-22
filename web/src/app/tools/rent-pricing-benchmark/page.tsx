@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
 type PropertyType = "house" | "condo" | "duplex" | "apartment";
+type FAQ = { question: string; answer: string };
 
 const propertyTypes: { value: PropertyType; label: string }[] = [
   { value: "house", label: "House" },
@@ -20,6 +21,25 @@ const conditionLabels: Record<number, string> = {
   4: "Updated",
   5: "Excellent",
 };
+
+const faqs: FAQ[] = [
+  {
+    question: "How often should I update my rent price?",
+    answer: "Check monthly while listed and at least 60 days before renewals. Small adjustments beat big swings after long vacancy.",
+  },
+  {
+    question: "Does this guarantee I’ll get the suggested rent?",
+    answer: "No tool can guarantee rent. This gives a data-backed range; photos, timing, and marketing quality still matter.",
+  },
+  {
+    question: "What if my comps are unusual or limited?",
+    answer: "Use the condition slider and parking toggle to nudge the range. If your property is unique, stay near the midpoint and test response.",
+  },
+  {
+    question: "Should I lower price or improve the listing first?",
+    answer: "Start with better photos, description, and showing speed. If inquiries stay slow after a week, tighten toward the midpoint.",
+  },
+];
 
 export default function RentPricingPage() {
   const [inputs, setInputs] = useState({
@@ -236,6 +256,8 @@ export default function RentPricingPage() {
             />
           </div>
 
+          <FAQSection faqs={faqs} />
+
           <CTACluster />
         </div>
       </section>
@@ -394,10 +416,40 @@ function InsightCard({ title, items }: { title: string; items: string[] }) {
         {items.map((item) => (
           <li key={item} className="flex items-start gap-2">
             <span className="mt-1 inline-block h-2 w-2 rounded-full bg-rr-tool-teal" />
-            <span>{item}</span>
+            <span className="text-rr-text-primary/75">{item}</span>
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+function FAQSection({ faqs }: { faqs: FAQ[] }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
+
+  return (
+    <div className="space-y-3 rounded-[1.1rem] border border-rr-border-gray bg-rr-surface-white p-4 shadow-[var(--shadow-soft)]">
+      <p className="text-sm font-semibold text-rr-text-primary">FAQ</p>
+      <div className="space-y-3">
+        {faqs.map((faq) => (
+          <div key={faq.question} className="space-y-1 rounded-lg bg-rr-surface-offwhite/60 p-3">
+            <p className="text-sm font-semibold text-rr-text-primary">{faq.question}</p>
+            <p className="text-sm text-rr-text-primary/75">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
     </div>
   );
 }

@@ -11,12 +11,33 @@ type UpgradeOption = {
   defaultIncrease: number;
 };
 
+type FAQ = { question: string; answer: string };
+
 const upgrades: UpgradeOption[] = [
   { value: "paint", label: "Full interior paint", defaultCost: 2200, defaultIncrease: 120 },
   { value: "flooring", label: "LVP flooring (main areas)", defaultCost: 3800, defaultIncrease: 170 },
   { value: "appliances", label: "Appliance package refresh", defaultCost: 3200, defaultIncrease: 150 },
   { value: "bath", label: "Bathroom refresh", defaultCost: 4500, defaultIncrease: 210 },
   { value: "kitchen", label: "Kitchen refresh (countertops/backsplash)", defaultCost: 6800, defaultIncrease: 260 },
+];
+
+const faqs: FAQ[] = [
+  {
+    question: "What’s a good payback period for rental upgrades?",
+    answer: "Under ~24 months is generally strong. 24–30 months can be okay if the upgrade reduces turnover risk. Longer than that is usually slow.",
+  },
+  {
+    question: "Should I include vacancy during the project?",
+    answer: "Yes. If the work forces vacancy, factor those lost days into total cost. Faster execution or doing work between tenants improves ROI.",
+  },
+  {
+    question: "How accurate are the default rent lifts?",
+    answer: "They’re ballpark estimates. Your market, property type, and finish level matter. Adjust the expected increase based on comps and renter expectations.",
+  },
+  {
+    question: "Is it better to do multiple small upgrades or one big one?",
+    answer: "Start with fast-payback items (paint, fixtures, minor flooring) before big kitchen/bath projects unless comps clearly support a higher lift.",
+  },
 ];
 
 export default function RenovationROIPage() {
@@ -182,6 +203,8 @@ export default function RenovationROIPage() {
             />
           </div>
 
+          <FAQSection faqs={faqs} />
+
           <CTACluster />
         </div>
       </section>
@@ -322,10 +345,40 @@ function InsightCard({ title, items }: { title: string; items: string[] }) {
         {items.map((item) => (
           <li key={item} className="flex items-start gap-2">
             <span className="mt-1 inline-block h-2 w-2 rounded-full bg-rr-tool-teal" />
-            <span>{item}</span>
+            <span className="text-rr-text-primary/75">{item}</span>
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+function FAQSection({ faqs }: { faqs: FAQ[] }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
+
+  return (
+    <div className="space-y-3 rounded-[1.1rem] border border-rr-border-gray bg-rr-surface-white p-4 shadow-[var(--shadow-soft)]">
+      <p className="text-sm font-semibold text-rr-text-primary">FAQ</p>
+      <div className="space-y-3">
+        {faqs.map((faq) => (
+          <div key={faq.question} className="space-y-1 rounded-lg bg-rr-surface-offwhite/60 p-3">
+            <p className="text-sm font-semibold text-rr-text-primary">{faq.question}</p>
+            <p className="text-sm text-rr-text-primary/75">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
     </div>
   );
 }
