@@ -1,19 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 
 type PropertyType = "house" | "condo" | "duplex" | "apartment";
 type Inputs = {
   address: string;
   propertyType: PropertyType;
-  beds: number;
-  baths: number;
-  sqft: number;
+  beds: number | "";
+  baths: number | "";
+  sqft: number | "";
   parking: boolean;
   condition: number;
-  currentRent: number;
+  currentRent: number | "";
 };
 type FAQ = { question: string; answer: string };
 
@@ -51,19 +51,18 @@ const faqs: FAQ[] = [
   },
 ];
 
-const initialInputs: Inputs = {
-  address: "97202",
-  propertyType: "house",
-  beds: 3,
-  baths: 2,
-  sqft: 1450,
-  parking: true,
-  condition: 3,
-  currentRent: 2150,
-};
-
 export default function RentPricingPage() {
-  const [inputs, setInputs] = useState<Inputs>(initialInputs);
+  const [inputs, setInputs] = useState<Inputs>({
+    address: "",
+    propertyType: "house",
+    beds: 0,
+    baths: 0,
+    sqft: 0,
+    parking: false,
+    condition: 3,
+    currentRent: 0,
+  });
+  const resultsRef = useRef<HTMLDivElement | null>(null);
 
   const [apiEstimate, setApiEstimate] = useState<{
     status: "idle" | "loading" | "ready" | "error";
@@ -106,6 +105,7 @@ export default function RentPricingPage() {
       }
       const data = await res.json();
       setApiEstimate({ status: "ready", data });
+      resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (error) {
       if (controller.signal.aborted) return;
       setApiEstimate({
@@ -120,10 +120,14 @@ export default function RentPricingPage() {
     const compRentPerSqft = apiEstimate.data?.medianRentPerSqft ?? 0;
     const compRent = apiEstimate.data?.medianRent ?? 0;
     const zestimate = apiEstimate.data?.currentRentZestimate;
+    const numBeds = inputs.beds === "" ? 0 : Number(inputs.beds);
+    const numBaths = inputs.baths === "" ? 0 : Number(inputs.baths);
+    const numSqft = inputs.sqft === "" ? 0 : Number(inputs.sqft);
+    const numCurrentRent = inputs.currentRent === "" ? 0 : Number(inputs.currentRent);
 
     const compEstimate =
-      inputs.sqft && compRentPerSqft
-        ? compRentPerSqft * inputs.sqft
+      numSqft && compRentPerSqft
+        ? compRentPerSqft * numSqft
         : compRent || 0;
 
     let suggested = heuristic.suggested;
@@ -154,8 +158,8 @@ export default function RentPricingPage() {
 
     let status: "under" | "over" | "within" = "within";
     let delta = 0;
-    if (inputs.currentRent) {
-      delta = inputs.currentRent - suggested;
+    if (numCurrentRent) {
+      delta = numCurrentRent - suggested;
       if (delta <= -75) status = "under";
       else if (delta >= 75) status = "over";
     }
@@ -177,8 +181,12 @@ export default function RentPricingPage() {
       note,
       comps: apiEstimate.data,
       conditionFactor: heuristic.conditionFactor,
+      numBeds,
+      numBaths,
+      numSqft,
+      numCurrentRent,
     };
-  }, [apiEstimate, heuristic, inputs.currentRent, inputs.sqft]);
+  }, [apiEstimate, heuristic, inputs.currentRent, inputs.sqft, inputs.beds, inputs.baths]);
 
   const hasLiveEstimate =
     apiEstimate.status === "ready" &&
@@ -232,7 +240,7 @@ export default function RentPricingPage() {
                 label="Address"
                 value={inputs.address}
                 onChange={(address) => setInputs((prev) => ({ ...prev, address }))}
-                placeholder="e.g., 6965 Amberwick Way, Citrus Heights CA"
+                placeholder="e.g., 1450 SE Main St, Portland OR"
               />
               <SelectField
                 label="Property type"
@@ -240,20 +248,36 @@ export default function RentPricingPage() {
                 onChange={(propertyType) => setInputs((prev) => ({ ...prev, propertyType }))}
                 options={propertyTypes}
               />
-              <NumberField
+              <SelectField
                 label="Beds"
-                value={inputs.beds}
-                min={0}
-                max={8}
+                value={String(inputs.beds)}
                 onChange={(beds) => setInputs((prev) => ({ ...prev, beds }))}
+                options={[
+                  { value: "0", label: "Studio (0)" },
+                  { value: "1", label: "1" },
+                  { value: "2", label: "2" },
+                  { value: "3", label: "3" },
+                  { value: "4", label: "4" },
+                  { value: "5", label: "5+" },
+                ]}
+                helper="Studio? Pick 0."
               />
-              <NumberField
+              <SelectField
                 label="Baths"
-                value={inputs.baths}
-                min={0}
-                max={6}
-                step={0.5}
+                value={String(inputs.baths)}
                 onChange={(baths) => setInputs((prev) => ({ ...prev, baths }))}
+                options={[
+                  { value: "1", label: "1" },
+                  { value: "1.5", label: "1.5" },
+                  { value: "2", label: "2" },
+                  { value: "2.5", label: "2.5" },
+                  { value: "3", label: "3" },
+                  { value: "3.5", label: "3.5" },
+                  { value: "4", label: "4" },
+                  { value: "4.5", label: "4.5" },
+                  { value: "5", label: "5" },
+                ]}
+                helper="Half-baths included."
               />
               <NumberField
                 label="Square footage"
@@ -271,7 +295,7 @@ export default function RentPricingPage() {
                 max={8000}
                 step={25}
                 onChange={(currentRent) => setInputs((prev) => ({ ...prev, currentRent }))}
-                helper="We’ll show if that’s under/over market."
+                helper="We’ll show if that’s under/over market. Leave blank if unset."
               />
             </div>
             <div className="space-y-3 rounded-[12px] border border-rr-border-gray bg-rr-surface-white p-4">
@@ -319,7 +343,7 @@ export default function RentPricingPage() {
           <FAQSection faqs={faqs} />
         </div>
 
-        <div className="space-y-5">
+        <div className="space-y-5" ref={resultsRef}>
           <SectionHeader
             eyebrow="Results"
             title="Recommended rent range"
@@ -554,23 +578,26 @@ function NumberField({
   helper,
 }: {
   label: string;
-  value: number;
+  value: number | "";
   min?: number;
   max?: number;
   step?: number;
   helper?: string;
-  onChange: (value: number) => void;
+  onChange: (value: number | "") => void;
 }) {
   return (
     <label className="space-y-1 text-sm font-semibold text-rr-text-primary">
       {label}
       <input
         type="number"
-        value={value}
+        value={value === "" ? "" : value}
         min={min}
         max={max}
         step={step}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onChange={(e) => {
+          const next = e.target.value === "" ? "" : Number(e.target.value);
+          onChange(next);
+        }}
         className="w-full rounded-lg border border-rr-border-gray bg-white px-3 py-2 text-sm font-normal text-rr-text-primary shadow-[var(--shadow-soft)] focus:border-rr-accent-darkteal focus:outline-none"
       />
       {helper ? <p className="text-xs font-normal text-rr-text-primary/65">{helper}</p> : null}
@@ -656,9 +683,12 @@ function FAQSection({ faqs }: { faqs: FAQ[] }) {
   };
 
   return (
-    <div className="space-y-3 rounded-[1.1rem] border border-rr-border-gray bg-rr-surface-white p-4 shadow-[var(--shadow-soft)]">
-      <p className="text-sm font-semibold text-rr-text-primary">FAQ</p>
-      <div className="space-y-3">
+    <details className="space-y-3 rounded-[1.1rem] border border-rr-border-gray bg-rr-surface-white p-4 shadow-[var(--shadow-soft)]">
+      <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-rr-text-primary">
+        FAQ
+        <span className="text-xs text-rr-text-primary/70">Click to toggle</span>
+      </summary>
+      <div className="space-y-3 pt-2">
         {faqs.map((faq) => (
           <div key={faq.question} className="space-y-1 rounded-lg bg-rr-surface-offwhite/60 p-3">
             <p className="text-sm font-semibold text-rr-text-primary">{faq.question}</p>
@@ -667,7 +697,7 @@ function FAQSection({ faqs }: { faqs: FAQ[] }) {
         ))}
       </div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-    </div>
+    </details>
   );
 }
 
