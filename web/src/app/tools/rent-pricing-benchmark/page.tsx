@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
 type PropertyType = "house" | "condo" | "duplex" | "apartment";
 type Inputs = {
-  zip: string;
+  address: string;
   propertyType: PropertyType;
   beds: number;
   baths: number;
@@ -52,7 +52,7 @@ const faqs: FAQ[] = [
 ];
 
 const initialInputs: Inputs = {
-  zip: "97202",
+  address: "97202",
   propertyType: "house",
   beds: 3,
   baths: 2,
@@ -73,47 +73,40 @@ export default function RentPricingPage() {
 
   const heuristic = useMemo(() => computeHeuristic(inputs), [inputs]);
 
-  useEffect(() => {
-    if (!inputs.zip) {
-      setApiEstimate({ status: "idle" });
+  const fetchComps = async () => {
+    if (!inputs.address) {
+      setApiEstimate({ status: "error", error: "Address or ZIP is required for live comps." });
       return;
     }
     const controller = new AbortController();
-    const timer = setTimeout(async () => {
-      setApiEstimate((prev) => ({ ...prev, status: "loading" }));
-      try {
-        const res = await fetch("/api/rent-estimate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            zip: inputs.zip,
-            beds: inputs.beds,
-            baths: inputs.baths,
-            sqft: inputs.sqft,
-            propertyType: inputs.propertyType,
-          }),
-          signal: controller.signal,
-        });
-        if (!res.ok) {
-          const msg = await res.text();
-          throw new Error(msg || "Failed to fetch comps");
-        }
-        const data = await res.json();
-        setApiEstimate({ status: "ready", data });
-      } catch (error) {
-        if (controller.signal.aborted) return;
-        setApiEstimate({
-          status: "error",
-          error: error instanceof Error ? error.message : "Failed to fetch comps",
-        });
+    setApiEstimate({ status: "loading" });
+    try {
+      const res = await fetch("/api/rent-estimate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          address: inputs.address,
+          beds: inputs.beds,
+          baths: inputs.baths,
+          sqft: inputs.sqft,
+          propertyType: inputs.propertyType,
+        }),
+        signal: controller.signal,
+      });
+      if (!res.ok) {
+        const msg = await res.text();
+        throw new Error(msg || "Failed to fetch comps");
       }
-    }, 400);
-
-    return () => {
-      clearTimeout(timer);
-      controller.abort();
-    };
-  }, [inputs.zip, inputs.beds, inputs.baths, inputs.sqft, inputs.propertyType]);
+      const data = await res.json();
+      setApiEstimate({ status: "ready", data });
+    } catch (error) {
+      if (controller.signal.aborted) return;
+      setApiEstimate({
+        status: "error",
+        error: error instanceof Error ? error.message : "Failed to fetch comps",
+      });
+    }
+  };
 
   const results = useMemo(() => {
     const compCount = apiEstimate.data?.compsCount ?? 0;
@@ -219,10 +212,10 @@ export default function RentPricingPage() {
             />
             <div className="grid grid-cols-2 gap-5">
               <TextField
-                label="ZIP or neighborhood"
-                value={inputs.zip}
-                onChange={(zip) => setInputs((prev) => ({ ...prev, zip }))}
-                placeholder="e.g., 97202"
+                label="Address or ZIP"
+                value={inputs.address}
+                onChange={(address) => setInputs((prev) => ({ ...prev, address }))}
+                placeholder="e.g., 123 Main St, Portland OR or 97202"
               />
               <SelectField
                 label="Property type"
@@ -286,6 +279,24 @@ export default function RentPricingPage() {
                 Parking included
               </label>
             </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={fetchComps}
+                className="inline-flex items-center justify-center rounded-full bg-rr-accent-gold px-5 py-2.5 text-sm font-semibold text-rr-hero-bg shadow-[0_12px_30px_-16px_rgba(0,0,0,0.35)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+                disabled={apiEstimate.status === "loading"}
+              >
+                {apiEstimate.status === "loading" ? "Fetching comps..." : "Get live comps"}
+              </button>
+              {apiEstimate.status === "error" ? (
+                <p className="text-xs text-rr-status-alert">{apiEstimate.error || "Unable to fetch comps."}</p>
+              ) : null}
+              {apiEstimate.status === "ready" ? (
+                <p className="text-xs text-rr-text-primary/70">
+                  {apiEstimate.data?.compsCount || 0} comps used for this estimate.
+                </p>
+              ) : null}
+            </div>
           </div>
 
           <FAQSection faqs={faqs} />
@@ -307,7 +318,7 @@ export default function RentPricingPage() {
             <p className="mt-2 text-3xl font-semibold text-rr-text-primary">
               {formatCurrency(results.lower)} – {formatCurrency(results.upper)}
             </p>
-            <p className="text-sm text-rr-text-primary/70">Based on inputs for {inputs.beds}bd / {inputs.baths}ba in {inputs.zip || "your area"}.</p>
+            <p className="text-sm text-rr-text-primary/70">Based on inputs for {inputs.beds}bd / {inputs.baths}ba in {inputs.address || "your area"}.</p>
 
             <div className="mt-6 space-y-2 rounded-[12px] border border-rr-border-gray bg-rr-surface-white/80 p-4">
               <div className="flex items-center justify-between">

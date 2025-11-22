@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 type Body = {
+  address?: string;
   zip?: string;
   beds?: number;
   baths?: number;
@@ -23,22 +24,31 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
+  const address = body.address?.trim();
   const zip = body.zip?.trim();
   const beds = Number(body.beds || 0);
   const baths = Number(body.baths || 0);
   const sqft = Number(body.sqft || 0);
   const propertyType = mapPropertyType(body.propertyType);
 
-  if (!zip) {
-    return NextResponse.json({ error: "ZIP is required for rent estimate." }, { status: 400 });
+  if (!zip && !address) {
+    return NextResponse.json({ error: "Address or ZIP is required for rent estimate." }, { status: 400 });
   }
 
   try {
+    const location = await lookupLocation(address || zip || "");
+    if (!location) {
+      return NextResponse.json({ error: "Unable to resolve location from address/ZIP." }, { status: 400 });
+    }
+
     const params = new URLSearchParams({
-      zipcode: zip,
       limit: "50",
       offset: "0",
-      sort: "frehsnest",
+      sort: "recently_added_update",
+      city: location.city,
+      state_code: location.state_code,
+      postal_code: location.postal_code,
+      expand_search_radius: "5",
     });
 
     if (beds > 0) {
@@ -58,7 +68,7 @@ export async function POST(request: Request) {
       params.set("property_type", propertyType);
     }
 
-    const url = `${RAPID_BASE}/api/v2/for-rent-by-zipcode?${params.toString()}`;
+    const url = `${RAPID_BASE}/v3/for-rent?${params.toString()}`;
     const response = await fetch(url, {
       headers: {
         "X-RapidAPI-Key": process.env.REAL_ESTATE_API_KEY as string,
@@ -100,6 +110,26 @@ export async function POST(request: Request) {
   }
 }
 
+async function lookupLocation(input: string) {
+  const url = `${RAPID_BASE}/location/suggest?input=${encodeURIComponent(input)}`;
+  const response = await fetch(url, {
+    headers: {
+      "X-RapidAPI-Key": process.env.REAL_ESTATE_API_KEY as string,
+      "X-RapidAPI-Host": HOST_HEADER,
+    },
+    cache: "no-store",
+  });
+  if (!response.ok) return null;
+  const data = await response.json();
+  const first = Array.isArray(data?.data) ? data.data[0] : null;
+  if (!first?.city || !first?.state_code) return null;
+  return {
+    city: first.city as string,
+    state_code: first.state_code as string,
+    postal_code: first.postal_code as string,
+  };
+}
+
 function mapPropertyType(type?: string) {
   if (!type) return "";
   const value = type.toLowerCase();
@@ -116,31 +146,32 @@ function extractComps(payload: unknown): Comp[] {
   const obj = payload as Record<string, unknown>;
   const data = obj?.data as Record<string, unknown> | undefined;
   const homeSearch = data?.home_search as Record<string, unknown> | undefined;
-  const homeSearchResults = Array.isArray(homeSearch?.results) ? homeSearch?.results : undefined;
-  const fallbackHomeSearch = obj?.home_search as Record<string, unknown> | undefined;
-  const fallbackHomeResults = Array.isArray(fallbackHomeSearch?.results) ? fallbackHomeSearch?.results : undefined;
-  const dataResults = Array.isArray(data?.results) ? data?.results : undefined;
-  const rootResults = Array.isArray(obj?.results) ? obj?.results : undefined;
+  const resultsArray =
+    (Array.isArray(homeSearch?.results as unknown[]) ? (homeSearch?.results as unknown[]) : null) ||
+    (Array.isArray(homeSearch?.properties as unknown[]) ? (homeSearch?.properties as unknown[]) : null) ||
+    [];
 
-  const results = homeSearchResults || fallbackHomeResults || dataResults || rootResults || [];
-
-  return results
-    .map((item) => {
-      const rec = item as Record<string, unknown>;
+  return resultsArray
+    .map((raw) => {
+      const item = raw as Record<string, unknown>;
+      const community = item.community as Record<string, unknown> | undefined;
+      const description = item.description as Record<string, unknown> | undefined;
+      const building = item.building_size as Record<string, unknown> | undefined;
       const rent =
-        (rec.list_price as number | undefined) ??
-        (rec.price as number | undefined) ??
-        (rec.list_price_min as number | undefined) ??
-        (rec.price_min as number | undefined);
-      const desc = rec.description as Record<string, unknown> | undefined;
-      const building = rec.building_size as Record<string, unknown> | undefined;
+        (item.list_price as number | undefined) ??
+        (item.price as number | undefined) ??
+        (item.list_price_min as number | undefined) ??
+        (item.price_min as number | undefined) ??
+        (community?.price as number | undefined);
       const sqft =
-        (desc?.sqft as number | undefined) ??
-        (rec.sqft as number | undefined) ??
+        (description?.sqft as number | undefined) ??
+        (item.sqft as number | undefined) ??
+        (item.living_area as number | undefined) ??
+        (community?.sqft_min as number | undefined) ??
         (building?.size as number | undefined);
       return { rent: rent ? Number(rent) : NaN, sqft: sqft ? Number(sqft) : undefined };
     })
-    .filter((c) => Number.isFinite(c.rent) && c.rent > 0);
+    .filter((c: Comp) => Number.isFinite(c.rent) && c.rent > 0);
 }
 
 function filterOutliers(comps: Comp[]) {
