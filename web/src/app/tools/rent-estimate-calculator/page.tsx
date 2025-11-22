@@ -186,10 +186,10 @@ export default function RentPricingPage() {
 
   return (
     <main
-      className="relative mx-auto w-full space-y-10 px-4 py-8 text-rr-text-primary md:px-6 md:py-10"
+      className="relative mx-auto w-full space-y-10 px-4 py-6 text-rr-text-primary md:px-6 md:py-10"
       style={{ maxWidth: "1280px" }}
     >
-      <section className="grid max-h-[340px] grid-cols-[1fr_300px] items-start gap-8 py-12">
+      <section className="grid gap-6 rounded-[1.2rem] border border-rr-border-gray bg-rr-surface-white/90 p-5 shadow-[var(--shadow-card)] md:grid-cols-[1.05fr_0.95fr] md:p-10">
         <div className="space-y-4">
           <Eyebrow>Rent Price Calculator</Eyebrow>
           <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
@@ -219,7 +219,7 @@ export default function RentPricingPage() {
         </div>
       </section>
 
-      <section id="tool" className="grid grid-cols-[45%_55%] gap-8 py-8 md:py-10">
+      <section id="tool" className="grid grid-cols-1 gap-8 py-6 md:grid-cols-[1.05fr_0.95fr] md:py-10">
         <div className="space-y-5">
           <div className="space-y-4 rounded-[12px] border border-rr-border-gray bg-rr-surface-offwhite/60 p-5 shadow-[var(--shadow-soft)]">
             <SectionHeader
@@ -227,7 +227,7 @@ export default function RentPricingPage() {
               title="Property details"
               description="Plug in the essentials so we can estimate a realistic rent range."
             />
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid gap-5 md:grid-cols-2">
               <TextField
                 label="Address"
                 value={inputs.address}
