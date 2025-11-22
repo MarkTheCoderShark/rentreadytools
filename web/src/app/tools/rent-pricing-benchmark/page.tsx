@@ -180,6 +180,10 @@ export default function RentPricingPage() {
     };
   }, [apiEstimate, heuristic, inputs.currentRent, inputs.sqft]);
 
+  const hasLiveEstimate =
+    apiEstimate.status === "ready" &&
+    ((apiEstimate.data?.medianRent ?? 0) > 0 || (apiEstimate.data?.currentRentZestimate ?? 0) > 0);
+
   return (
     <main
       className="relative mx-auto w-full space-y-10 px-4 py-8 text-rr-text-primary md:px-6 md:py-10"
@@ -322,54 +326,71 @@ export default function RentPricingPage() {
             description="Instant range plus a suggested price based on condition and amenities."
           />
           <div className="rounded-[12px] border border-rr-rent-border bg-gradient-to-br from-rr-rent-grad-start via-rr-rent-peach/40 to-rr-rent-grad-end p-6 shadow-[var(--shadow-soft)]">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-rr-text-primary/70">Range</p>
-              <span className="rounded-full bg-rr-accent-gold/25 px-3 py-1 text-[11px] font-semibold text-rr-accent-darkteal">
-                {results.competition} competition
-              </span>
-            </div>
-            <p className="mt-2 text-3xl font-semibold text-rr-text-primary">
-              {formatCurrency(results.lower)} – {formatCurrency(results.upper)}
-            </p>
-            <p className="text-sm text-rr-text-primary/70">
-              Based on inputs for {inputs.beds}bd / {inputs.baths}ba at {inputs.address || "your address"}.
-            </p>
-
-            <div className="mt-6 space-y-2 rounded-[12px] border border-rr-border-gray bg-rr-surface-white/80 p-4">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-rr-text-primary">Suggested price</p>
-                <StatusPill status={results.status} delta={results.delta} />
-              </div>
-              <p className="text-2xl font-semibold text-rr-text-primary">{formatCurrency(results.suggested)}</p>
-              {inputs.currentRent ? (
-                <p className="text-sm text-rr-text-primary/75">
-                  Current asking: {formatCurrency(inputs.currentRent)} ({results.status === "within" ? "within range" : `${results.status === "under" ? "under" : "over"} by ${formatCurrency(Math.abs(results.delta))}`})
+            {hasLiveEstimate ? (
+              <>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-rr-text-primary/70">Range</p>
+                  <span className="rounded-full bg-rr-accent-gold/25 px-3 py-1 text-[11px] font-semibold text-rr-accent-darkteal">
+                    {results.competition} competition
+                  </span>
+                </div>
+                <p className="mt-2 text-3xl font-semibold text-rr-text-primary">
+                  {formatCurrency(results.lower)} – {formatCurrency(results.upper)}
                 </p>
-              ) : (
-                <p className="text-sm text-rr-text-primary/75">Add your current asking rent to see under/overpricing.</p>
-              )}
-              <CompMeta results={results} />
-            </div>
+                <p className="text-sm text-rr-text-primary/70">
+                  Based on inputs for {inputs.beds}bd / {inputs.baths}ba at {inputs.address || "your address"}.
+                </p>
 
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
-              <InsightCard
-                title="Action"
-                items={[
-                  results.status === "under"
-                    ? "You may be underpricing; test a bump toward the suggested price."
-                    : results.status === "over"
-                      ? "You may be overpricing; tighten toward the midpoint to cut vacancy."
-                      : "You’re within range; focus on marketing speed to reduce vacancy.",
-                ]}
-              />
-              <InsightCard
-                title="Next steps"
-                items={[
-                  "Refresh photos + highlight amenities that match comps.",
-                  "Re-check pricing monthly if days-on-market rise.",
-                ]}
-              />
-            </div>
+                <div className="mt-6 space-y-2 rounded-[12px] border border-rr-border-gray bg-rr-surface-white/80 p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold text-rr-text-primary">Suggested price</p>
+                    <StatusPill status={results.status} delta={results.delta} />
+                  </div>
+                  <p className="text-2xl font-semibold text-rr-text-primary">{formatCurrency(results.suggested)}</p>
+                  {inputs.currentRent ? (
+                    <p className="text-sm text-rr-text-primary/75">
+                      Current asking: {formatCurrency(inputs.currentRent)} ({results.status === "within" ? "within range" : `${results.status === "under" ? "under" : "over"} by ${formatCurrency(Math.abs(results.delta))}`})
+                    </p>
+                  ) : (
+                    <p className="text-sm text-rr-text-primary/75">Add your current asking rent to see under/overpricing.</p>
+                  )}
+                  <CompMeta results={results} />
+                </div>
+
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  <InsightCard
+                    title="Action"
+                    items={[
+                      results.status === "under"
+                        ? "You may be underpricing; test a bump toward the suggested price."
+                        : results.status === "over"
+                          ? "You may be overpricing; tighten toward the midpoint to cut vacancy."
+                          : "You’re within range; focus on marketing speed to reduce vacancy.",
+                    ]}
+                  />
+                  <InsightCard
+                    title="Next steps"
+                    items={[
+                      "Refresh photos + highlight amenities that match comps.",
+                      "Re-check pricing monthly if days-on-market rise.",
+                    ]}
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="space-y-3 text-sm text-rr-text-primary/75">
+                <p className="text-base font-semibold text-rr-text-primary">Get your live rent estimate</p>
+                <p>Enter a full address and click “Get live comps” to see the recommended range.</p>
+                <div className="flex flex-wrap gap-2">
+                  <PrimaryButton href="#tool" onClick={(e) => { e.preventDefault(); fetchComps(); }}>
+                    Get live comps
+                  </PrimaryButton>
+                  {apiEstimate.status === "error" ? (
+                    <p className="text-xs text-rr-status-alert">{apiEstimate.error || "Unable to fetch comps."}</p>
+                  ) : null}
+                </div>
+              </div>
+            )}
           </div>
 
           <CTACluster />
