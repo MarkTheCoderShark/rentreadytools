@@ -67,7 +67,13 @@ export default function RentPricingPage() {
 
   const [apiEstimate, setApiEstimate] = useState<{
     status: "idle" | "loading" | "ready" | "error";
-    data?: { compsCount: number; medianRent: number; medianRentPerSqft: number; zip?: string };
+    data?: {
+      compsCount: number;
+      medianRent: number;
+      medianRentPerSqft: number;
+      address?: string;
+      currentRentZestimate?: number;
+    };
     error?: string;
   }>({ status: "idle" });
 
@@ -334,6 +340,11 @@ export default function RentPricingPage() {
               ) : (
                 <p className="text-sm text-rr-text-primary/75">Add your current asking rent to see under/overpricing.</p>
               )}
+              {results.comps?.currentRentZestimate ? (
+                <p className="text-sm text-rr-text-primary/70">
+                  Zillow rent estimate: {formatCurrency(results.comps.currentRentZestimate)}
+                </p>
+              ) : null}
               <CompMeta results={results} />
             </div>
 
@@ -425,7 +436,12 @@ function CompMeta({
 }: {
   results: ReturnType<typeof computeHeuristic> & {
     note?: string;
-    comps?: { compsCount?: number; medianRent?: number; medianRentPerSqft?: number };
+    comps?: {
+      compsCount?: number;
+      medianRent?: number;
+      medianRentPerSqft?: number;
+      currentRentZestimate?: number;
+    };
   };
 }) {
   const compsCount = results.comps?.compsCount ?? 0;

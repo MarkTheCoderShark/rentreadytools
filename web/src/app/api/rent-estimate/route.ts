@@ -62,6 +62,7 @@ export async function POST(request: Request) {
       medianRent,
       medianRentPerSqft: 0,
       address,
+      currentRentZestimate: current,
     });
   } catch (error) {
     console.error("Zillow rent estimate error", error);
