@@ -70,7 +70,7 @@ export default function RentPricingGuidePage() {
             </p>
           </div>
           <Link
-            href="/tools/rent-pricing-benchmark"
+            href="/tools/rent-estimate-calculator"
             className="inline-flex items-center justify-center rounded-full bg-rr-accent-gold px-4 py-2 text-sm font-semibold text-rr-text-primary shadow-[0_10px_28px_-16px_rgba(0,0,0,0.35)] transition hover:-translate-y-0.5"
           >
             Run the calculator

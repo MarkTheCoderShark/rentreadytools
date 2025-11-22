@@ -23,7 +23,7 @@ const tools = [
     name: "Rent Price Calculator",
     description:
       "Get a data-backed rent range and see if you're under- or overpricing.",
-    href: "/tools/rent-pricing-benchmark",
+    href: "/tools/rent-estimate-calculator",
     tag: "Flagship tool",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-6 h-6">
@@ -102,7 +102,7 @@ const pmBenefits = [
 
 export default function Home() {
   return (
-    <main className="relative mx-auto max-w-6xl space-y-14 px-4 py-10 text-rr-text-primary md:space-y-20 md:px-6 md:py-16">
+    <main className="relative mx-auto max-w-6xl space-y-14 px-4 pb-10 pt-0 text-rr-text-primary md:space-y-20 md:px-6 md:pb-16">
       <Hero />
 
       <section className="space-y-8 rounded-[1.4rem] border border-rr-border-gray bg-rr-surface-offwhite px-6 py-10 md:space-y-10 md:px-8 md:py-12">
@@ -211,7 +211,7 @@ export default function Home() {
             title="Price your rental like a pro."
             description="Avoid the race to the bottom. Compare your rent against similar properties and get a recommended range."
             actionLabel="Get a rent price"
-            actionHref="/tools/rent-pricing-benchmark"
+            actionHref="/tools/rent-estimate-calculator"
             bullets={[
               "Shows underpricing/overpricing with plain-language guidance.",
               "Condition and amenities adjustments baked in.",
@@ -349,39 +349,41 @@ export default function Home() {
 
 function Hero() {
   return (
-    <section
-      className="relative overflow-hidden rounded-[1.6rem] border border-rr-border-gray bg-cover bg-center bg-no-repeat shadow-[var(--shadow-card)]"
-      style={{
-        backgroundImage: "url('/hero.png')",
-      }}
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-rr-hero-bg/80 via-rr-hero-bg-secondary/70 to-rr-hero-deepgreen/60" />
-      <div className="relative grid gap-10 p-8 md:grid-cols-[1.1fr_0.9fr] md:p-12">
-        <div className="space-y-6 text-white">
-          <Eyebrow tone="dark">Landlord Command Center</Eyebrow>
-          <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
-            Free tools to maximize your rental income and reduce vacancy.
-          </h1>
-          <p className="max-w-2xl text-base leading-relaxed text-rr-hero-highlight/90">
-            Run the numbers on pricing, turnover, and upgrades. See exactly what doing it yourself costs you—and when it
-            makes sense to hand it off.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <PrimaryButton href="/tools/rent-pricing-benchmark" tone="hero">
-              Launch Rent Price Calculator
-            </PrimaryButton>
-            <GhostButton href="/property-management" tone="hero">
-              Get a free rental analysis
-            </GhostButton>
-          </div>
-          <div className="flex flex-wrap gap-2 text-xs font-medium text-rr-hero-highlight/80">
-            <Badge tone="hero">Rent pricing clarity</Badge>
-            <Badge tone="hero">Vacancy reduction</Badge>
-            <Badge tone="hero">ROI-focused upgrades</Badge>
+    <div className="relative left-1/2 right-1/2 w-screen -translate-x-1/2">
+      <section
+        className="relative isolate w-screen max-w-none overflow-hidden bg-cover bg-center bg-no-repeat md:w-screen md:max-w-none"
+        style={{
+          backgroundImage: "url('/hero.png')",
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-rr-hero-bg/80 via-rr-hero-bg-secondary/70 to-rr-hero-deepgreen/60" />
+        <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-10 md:grid-cols-[1.1fr_0.9fr] md:px-6 md:py-16">
+          <div className="space-y-6 text-white">
+            <Eyebrow tone="dark">Landlord Command Center</Eyebrow>
+            <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
+              Free tools to maximize your rental income and reduce vacancy.
+            </h1>
+            <p className="max-w-2xl text-base leading-relaxed text-rr-hero-highlight/90">
+              Run the numbers on pricing, turnover, and upgrades. See exactly what doing it yourself costs you—and when it
+              makes sense to hand it off.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <PrimaryButton href="/tools/rent-estimate-calculator" tone="hero">
+                Launch Rent Price Calculator
+              </PrimaryButton>
+              <GhostButton href="/property-management" tone="hero">
+                Get a free rental analysis
+              </GhostButton>
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs font-medium text-rr-hero-highlight/80">
+              <Badge tone="hero">Rent pricing clarity</Badge>
+              <Badge tone="hero">Vacancy reduction</Badge>
+              <Badge tone="hero">ROI-focused upgrades</Badge>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }
 

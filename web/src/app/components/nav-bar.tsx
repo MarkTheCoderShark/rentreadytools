@@ -55,7 +55,7 @@ export default function NavBar() {
         </nav>
         <div className="flex items-center gap-3">
           <Link
-            href="/tools/rent-pricing-benchmark"
+            href="/tools/rent-estimate-calculator"
             className="hidden items-center justify-center rounded-full bg-rr-accent-gold px-4 py-2 text-sm font-semibold text-rr-text-primary shadow-[0_10px_28px_-16px_rgba(0,0,0,0.35)] transition hover:-translate-y-0.5 sm:inline-flex"
           >
             Run rent price calculator

@@ -5,7 +5,7 @@ const tools = [
   {
     name: "Rent Price Calculator",
     description: "Get a data-backed rent range and see if you're under- or overpricing.",
-    href: "/tools/rent-pricing-benchmark",
+    href: "/tools/rent-estimate-calculator",
     tag: "Flagship tool",
     tone: "accent" as const,
   },

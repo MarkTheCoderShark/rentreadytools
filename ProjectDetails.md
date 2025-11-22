@@ -64,7 +64,7 @@ Tone Do/Don’t:
 2.1 High-Level Site Map
 /
   /tools/
-    /tools/rent-pricing-benchmark
+    /tools/rent-estimate-calculator
     /tools/vacancy-loss-calculator
     /tools/make-ready-audit
     /tools/renovation-roi
@@ -89,7 +89,7 @@ Tone Do/Don’t:
   /terms/
 Routing notes for Next.js (App Router):
 app/page.tsx → Homepage
-app/tools/rent-pricing-benchmark/page.tsx → Rent Price Calculator
+app/tools/rent-estimate-calculator/page.tsx → Rent Price Calculator
 app/property-management/page.tsx → PM service sales page
 Blog/articles can live under app/(blog)/turnover/... or similar.
 3. Homepage Wireframe (Content + Layout)
@@ -188,7 +188,7 @@ About, Contact, Legal
 Suggested sitemap:
 / – Homepage
 /tools/
-/tools/rent-pricing-benchmark
+/tools/rent-estimate-calculator
 /tools/vacancy-loss-calculator
 /tools/make-ready-audit
 /tools/renovation-roi
@@ -492,7 +492,8 @@ Everywhere a tool output reveals pain (money lost, underpricing), nearby CTA sho
 - Homepage built to spec: hero with dark teal image + white text, how-it-works, tools grid, turnover/rent highlights, PM dark block, featured resources; bottom CTA now embeds the consult form.
 - Tools implemented with unified layout (compressed hero, left inputs/FAQ, right results + CTA): Rent Price Calculator, Vacancy Cost Calculator, Move-In Readiness Checklist, Rental Renovation ROI Calculator.
 - Rent Price Calculator now uses live Zillow rent estimate (address-only input) as primary suggested price; “Get live comps” gate prevents showing a range before fetching; heuristic/comps blend as fallback.
-- Vacancy Cost Calculator redesigned per spec with unified results card, inline email capture CTA, and FAQs.
+- Vacancy Cost Calculator now uses the “Fast estimate → Make it exact” flow with instant results, editable assumptions, and CTA copy tied to rental analysis/PM.
 - Move-In Readiness and Renovation ROI tools restyled to the new layout with FAQs and CTAs.
 - Contact/lead capture: reusable form, /contact page, inline form on homepage bottom CTA; Resend wired via `/api/contact`.
 - Rent estimate API switched to Zillow working API; env updated to `ZILLOW_API_KEY`; lint clean via `npm run lint`.
+- New content/hubs live: turnover hub + guide + true-cost article, rent pricing hub + how-to-run-comps guide, landlord forms hub + notice-to-enter generator, security deposit return letter, move-in and move-out checklists.
