@@ -7,6 +7,7 @@ type Body = {
   baths?: number;
   sqft?: number;
   propertyType?: string;
+  currentRent?: number;
 };
 
 const RAPID_BASE = "https://us-real-estate.p.rapidapi.com";
@@ -30,6 +31,7 @@ export async function POST(request: Request) {
   const baths = Number(body.baths || 0);
   const sqft = Number(body.sqft || 0);
   const propertyType = mapPropertyType(body.propertyType);
+  const currentRent = Number(body.currentRent || 0);
 
   if (!zip && !address) {
     return NextResponse.json({ error: "Address or ZIP is required for rent estimate." }, { status: 400 });
@@ -51,6 +53,10 @@ export async function POST(request: Request) {
       expand_search_radius: "25",
     });
 
+    const priceBounds = computePriceBounds({ beds, baths, sqft, currentRent });
+    params.set("price_min", String(priceBounds.min));
+    params.set("price_max", String(priceBounds.max));
+
     if (beds > 0) {
       params.set("beds_min", String(Math.max(0, beds - 1)));
       params.set("beds_max", String(beds + 1));
@@ -61,8 +67,12 @@ export async function POST(request: Request) {
       params.set("baths_max", (baths + 1).toFixed(1));
     }
     if (sqft > 0) {
-      params.set("home_size_min", String(Math.max(300, Math.round(sqft * 0.7))));
-      params.set("home_size_max", String(Math.round(sqft * 1.3)));
+      const sizeBounds = snapSizeBounds(sqft);
+      params.set("home_size_min", String(sizeBounds.min));
+      params.set("home_size_max", String(sizeBounds.max));
+    } else {
+      params.set("home_size_min", "500");
+      params.set("home_size_max", "3000");
     }
     if (propertyType) {
       params.set("property_type", propertyType);
@@ -138,6 +148,54 @@ function mapPropertyType(type?: string) {
   if (value === "apartment") return "apartment";
   if (value === "duplex" || value === "multi_family") return "multi_family";
   return "";
+}
+
+function computePriceBounds({
+  beds,
+  baths,
+  sqft,
+  currentRent,
+}: {
+  beds: number;
+  baths: number;
+  sqft: number;
+  currentRent: number;
+}) {
+  const base =
+    950 +
+    beds * 360 +
+    baths * 180 +
+    (sqft ? Math.min(sqft, 2500) * 0.65 : 0);
+  const anchor = currentRent > 0 ? currentRent : base;
+  const min = Math.max(800, Math.round(anchor * 0.6));
+  const max = Math.round(anchor * 1.5);
+  return { min, max };
+}
+
+function snapSizeBounds(sqft: number) {
+  const allowed = [500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000];
+  const targetMin = Math.max(500, Math.round(sqft * 0.7));
+  const targetMax = Math.max(targetMin, Math.round(sqft * 1.3));
+
+  const min = closestBelowOrEqual(allowed, targetMin);
+  const max = closestAboveOrEqual(allowed, targetMax);
+  return { min, max };
+}
+
+function closestBelowOrEqual(values: number[], target: number) {
+  let best = values[0];
+  for (const v of values) {
+    if (v <= target && v >= best) best = v;
+  }
+  return best;
+}
+
+function closestAboveOrEqual(values: number[], target: number) {
+  let best = values[values.length - 1];
+  for (const v of values) {
+    if (v >= target && v <= best) best = v;
+  }
+  return best;
 }
 
 type Comp = { rent: number; sqft?: number };

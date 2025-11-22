@@ -90,6 +90,7 @@ export default function RentPricingPage() {
           baths: inputs.baths,
           sqft: inputs.sqft,
           propertyType: inputs.propertyType,
+          currentRent: inputs.currentRent,
         }),
         signal: controller.signal,
       });
