@@ -1,17 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import RelatedResources from "@/app/components/related-resources";
+import { LastUpdated } from "../../components/last-updated";
+import { ArticleSchema } from "@/app/components/article-schema";
 
 export const metadata: Metadata = {
-  title: "How Long Should Tenant Turnover Take? | Benchmarks | RentReadyTools",
+  title: "How Long Should Tenant Turnover Take? | 2025 Benchmarks | RentReadyTools",
   description:
-    "Turnover timeline benchmarks for landlords: notice to move-out, cleaning, repairs, listing, and lease-up with tips to avoid stalls.",
+    "2025 turnover timeline benchmarks for landlords: notice to move-out, cleaning, repairs, listing, and lease-up with tips to avoid stalls.",
+  alternates: {
+    canonical: "https://rentreadytools.com/turnover/how-long-should-turnover-take",
+  },
 };
 
 const benchmarks = [
-  { type: "Clean, light turn", days: "7–10 days", notes: "Paint touch-ups, deep clean, minor hardware swaps." },
-  { type: "Average turn", days: "10–14 days", notes: "Paint/patch, small repairs, carpet shampoo, refreshed photos." },
-  { type: "Heavy turn", days: "14–21 days", notes: "Flooring replacement, appliance swap, bath caulk/grout, new fixtures." },
-  { type: "Full rehab", days: "30–60 days", notes: "Flooring, kitchen/bath updates, permits, inspections, and new photos." },
+  { type: "Clean, light turn", days: "7–10 days", notes: "Paint touch-ups, deep clean, minor hardware swaps. (2025 benchmark)" },
+  { type: "Average turn", days: "10–14 days", notes: "Paint/patch, small repairs, carpet shampoo, refreshed photos. (2025 benchmark)" },
+  { type: "Heavy turn", days: "14–21 days", notes: "Flooring replacement, appliance swap, bath caulk/grout, new fixtures. (2025 benchmark)" },
+  { type: "Full rehab", days: "30–60 days", notes: "Flooring, kitchen/bath updates, permits, inspections, and new photos. (2025 benchmark)" },
 ];
 
 const blockers = [
@@ -30,8 +36,21 @@ const contactHighlights = [
 ];
 
 export default function TurnoverTimelinePage() {
+  const relatedResources = [
+    { label: "Vacancy Calculator", href: "/tools/vacancy-rate-calculator", icon: "calculator" as const },
+    { label: "Turnover Guide", href: "/turnover/guide", icon: "guide" as const },
+    { label: "True Cost Guide", href: "/turnover/true-cost-of-tenant-turnover", icon: "chart" as const },
+  ];
+
   return (
-    <main className="relative mx-auto max-w-5xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-14 md:px-6 md:py-16">
+    <>
+      <ArticleSchema
+        title="How Long Should Tenant Turnover Take?"
+        description="2025 turnover timeline benchmarks for landlords: notice to move-out, cleaning, repairs, listing, and lease-up with tips to avoid stalls."
+        url="/turnover/how-long-should-turnover-take"
+        author="RentReadyTools"
+      />
+      <main className="relative mx-auto max-w-5xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-14 md:px-6 md:py-16">
       <header className="space-y-4">
         <Eyebrow>Turnover benchmarks</Eyebrow>
         <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
@@ -105,7 +124,10 @@ export default function TurnoverTimelinePage() {
           ))}
         </ul>
       </section>
-    </main>
+
+      <RelatedResources resources={relatedResources} />
+      </main>
+    </>
   );
 }
 

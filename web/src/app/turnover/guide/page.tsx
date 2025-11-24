@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import RelatedResources from "@/app/components/related-resources";
+import { ArticleSchema } from "@/app/components/article-schema";
 
 export const metadata: Metadata = {
   title: "Turnover Guide | From Notice to Move-In | RentReadyTools",
   description:
     "A complete turnover guide for landlords: timelines, checklists, and pricing signals to keep vacancy short and move-ins smooth.",
+  alternates: {
+    canonical: "https://rentreadytools.com/turnover/guide",
+  },
 };
 
 const phases = [
@@ -50,8 +55,22 @@ const links = [
 ];
 
 export default function TurnoverGuidePage() {
+  const relatedResources = [
+    { label: "Turnover Timeline Guide", href: "/turnover/how-long-should-turnover-take", icon: "guide" as const },
+    { label: "Cleaning Checklist", href: "/turnover/move-out-cleaning-checklist", icon: "checklist" as const },
+    { label: "True Cost Guide", href: "/turnover/true-cost-of-tenant-turnover", icon: "chart" as const },
+    { label: "Move-in Checklist Tool", href: "/landlord-forms/move-in-checklist", icon: "tool" as const },
+  ];
+
   return (
-    <main className="relative mx-auto max-w-5xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-14 md:px-6 md:py-16">
+    <>
+      <ArticleSchema
+        title="Turnover Guide: From Notice to Move-In"
+        description="A complete turnover guide for landlords: timelines, checklists, and pricing signals to keep vacancy short and move-ins smooth."
+        url="/turnover/guide"
+        author="RentReadyTools"
+      />
+      <main className="relative mx-auto max-w-5xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-14 md:px-6 md:py-16">
       <header className="space-y-4">
         <Eyebrow>Turnover guide</Eyebrow>
         <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
@@ -106,7 +125,10 @@ export default function TurnoverGuidePage() {
           ))}
         </div>
       </section>
-    </main>
+
+      <RelatedResources resources={relatedResources} />
+      </main>
+    </>
   );
 }
 

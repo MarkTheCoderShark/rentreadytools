@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import RelatedResources from "@/app/components/related-resources";
 
 export const metadata: Metadata = {
   title: "The True Cost of Tenant Turnover | Missed Rent + Time | RentReadyTools",
   description:
     "See every cost in a tenant turnover: missed rent, your time, cash costs, and concessions. Use it to decide DIY vs professional management.",
+  alternates: {
+    canonical: "https://rentreadytools.com/turnover/true-cost-of-tenant-turnover",
+  },
 };
 
 const costs = [
@@ -23,6 +27,12 @@ const trims = [
 ];
 
 export default function TrueCostTurnoverPage() {
+  const relatedResources = [
+    { label: "Vacancy Calculator", href: "/tools/vacancy-rate-calculator", icon: "calculator" as const },
+    { label: "Turnover Timeline", href: "/turnover/how-long-should-turnover-take", icon: "chart" as const },
+    { label: "Turnover Guide", href: "/turnover/guide", icon: "guide" as const },
+  ];
+
   return (
     <main className="relative mx-auto max-w-5xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-14 md:px-6 md:py-16">
       <header className="space-y-4">
@@ -78,6 +88,8 @@ export default function TrueCostTurnoverPage() {
           <GhostButton href="/property-management">Talk to a property manager</GhostButton>
         </div>
       </section>
+
+      <RelatedResources resources={relatedResources} />
     </main>
   );
 }

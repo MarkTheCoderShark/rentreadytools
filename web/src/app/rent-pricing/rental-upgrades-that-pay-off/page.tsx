@@ -1,10 +1,39 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import RelatedResources from "@/app/components/related-resources";
+import { LastUpdated } from "../../components/last-updated";
+import { ArticleSchema } from "@/app/components/article-schema";
 
 export const metadata: Metadata = {
   title: "Rental Upgrades That Actually Pay Off | ROI Guide | RentReadyTools",
   description:
     "Landlord-focused ROI guide for rental upgrades. See which improvements raise rent, how long payback takes, and what to skip.",
+  alternates: {
+    canonical: "https://rentreadytools.com/rent-pricing/rental-upgrades-that-pay-off",
+  },
+  openGraph: {
+    title: "Rental Upgrades That Actually Pay Off | ROI Guide",
+    description:
+      "Landlord-focused ROI guide for rental upgrades. See which improvements raise rent, how long payback takes, and what to skip.",
+    url: "https://rentreadytools.com/rent-pricing/rental-upgrades-that-pay-off",
+    siteName: "RentReadyTools",
+    type: "article",
+    images: [
+      {
+        url: "https://rentreadytools.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "RentReadyTools - Rental Upgrades That Pay Off",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rental Upgrades That Actually Pay Off | ROI Guide",
+    description:
+      "Landlord-focused ROI guide for rental upgrades. See which improvements raise rent, how long payback takes, and what to skip.",
+    images: ["https://rentreadytools.com/og-image.jpg"],
+  },
 };
 
 const upgrades = [
@@ -49,8 +78,21 @@ const skipList = [
 ];
 
 export default function RentalUpgradesGuidePage() {
+  const relatedResources = [
+    { label: "Renovation ROI Calculator", href: "/tools/renovation-roi", icon: "calculator" as const },
+    { label: "How Much Rent Guide", href: "/rent-pricing/how-much-rent-can-i-charge", icon: "guide" as const },
+    { label: "Turnover Cost Guide", href: "/turnover/true-cost-of-tenant-turnover", icon: "chart" as const },
+  ];
+
   return (
-    <main className="relative mx-auto max-w-5xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-14 md:px-6 md:py-16">
+    <>
+      <ArticleSchema
+        title="Rental Upgrades That Actually Pay Off"
+        description="Landlord-focused ROI guide for rental upgrades. See which improvements raise rent, how long payback takes, and what to skip."
+        url="/rent-pricing/rental-upgrades-that-pay-off"
+        author="RentReadyTools"
+      />
+      <main className="relative mx-auto max-w-5xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-14 md:px-6 md:py-16">
       <header className="space-y-4">
         <Eyebrow>Upgrade ROI guide</Eyebrow>
         <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
@@ -70,9 +112,9 @@ export default function RentalUpgradesGuidePage() {
       <section className="space-y-4 rounded-[1.1rem] border border-rr-border-gray bg-rr-surface-white p-6 shadow-[var(--shadow-soft)] md:p-8">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
-            <h2 className="text-xl font-semibold tracking-tight text-rr-text-primary md:text-2xl">High-ROI upgrades</h2>
+            <h2 className="text-xl font-semibold tracking-tight text-rr-text-primary md:text-2xl">High-ROI upgrades (2025-validated)</h2>
             <p className="text-sm leading-relaxed text-rr-text-primary/75">
-              Use these estimates to prioritize work. Adjust for your market and existing rent level.
+              Use these 2025-validated estimates to prioritize work. Adjust for your market and existing rent level.
             </p>
           </div>
           <Link
@@ -133,7 +175,14 @@ export default function RentalUpgradesGuidePage() {
           </Link>
         </article>
       </section>
-    </main>
+
+      <div className="mt-8">
+        <LastUpdated date="January 2025" />
+      </div>
+
+      <RelatedResources resources={relatedResources} />
+      </main>
+    </>
   );
 }
 

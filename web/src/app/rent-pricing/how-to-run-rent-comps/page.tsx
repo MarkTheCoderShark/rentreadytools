@@ -1,10 +1,38 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import RelatedResources from "@/app/components/related-resources";
+import { ArticleSchema } from "@/app/components/article-schema";
 
 export const metadata: Metadata = {
   title: "How to Run Rent Comps | Landlord Playbook | RentReadyTools",
   description:
     "Step-by-step to run rental comps: what to filter, how to adjust for condition and amenities, and when to tighten price.",
+  alternates: {
+    canonical: "https://rentreadytools.com/rent-pricing/how-to-run-rent-comps",
+  },
+  openGraph: {
+    title: "How to Run Rent Comps | Landlord Playbook",
+    description:
+      "Step-by-step to run rental comps: what to filter, how to adjust for condition and amenities, and when to tighten price.",
+    url: "https://rentreadytools.com/rent-pricing/how-to-run-rent-comps",
+    siteName: "RentReadyTools",
+    type: "article",
+    images: [
+      {
+        url: "https://rentreadytools.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "RentReadyTools - How to Run Rent Comps",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "How to Run Rent Comps | Landlord Playbook",
+    description:
+      "Step-by-step to run rental comps: what to filter, how to adjust for condition and amenities, and when to tighten price.",
+    images: ["https://rentreadytools.com/og-image.jpg"],
+  },
 };
 
 const steps = [
@@ -38,8 +66,21 @@ const mistakes = [
 ];
 
 export default function RentCompsGuidePage() {
+  const relatedResources = [
+    { label: "Rent Estimate Calculator", href: "/tools/rent-estimate-calculator", icon: "calculator" as const },
+    { label: "How Much Rent Guide", href: "/rent-pricing/how-much-rent-can-i-charge", icon: "guide" as const },
+    { label: "Rental Upgrades Guide", href: "/rent-pricing/rental-upgrades-that-pay-off", icon: "chart" as const },
+  ];
+
   return (
-    <main className="relative mx-auto max-w-5xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-14 md:px-6 md:py-16">
+    <>
+      <ArticleSchema
+        title="How to Run Rent Comps"
+        description="Step-by-step to run rental comps: what to filter, how to adjust for condition and amenities, and when to tighten price."
+        url="/rent-pricing/how-to-run-rent-comps"
+        author="RentReadyTools"
+      />
+      <main className="relative mx-auto max-w-5xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-14 md:px-6 md:py-16">
       <header className="space-y-4">
         <Eyebrow>Rent pricing guide</Eyebrow>
         <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">How to run rent comps.</h1>
@@ -96,7 +137,10 @@ export default function RentCompsGuidePage() {
           </div>
         </article>
       </section>
-    </main>
+
+      <RelatedResources resources={relatedResources} />
+      </main>
+    </>
   );
 }
 

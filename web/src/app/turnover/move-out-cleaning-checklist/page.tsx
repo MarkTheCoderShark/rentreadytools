@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import RelatedResources from "@/app/components/related-resources";
 
 export const metadata: Metadata = {
   title: "Move-Out Cleaning Checklist | Turnover Ready Units | RentReadyTools",
   description:
     "A practical move-out cleaning checklist to speed tenant turnover: room-by-room tasks, supplies, and photo proof list.",
+  alternates: {
+    canonical: "https://rentreadytools.com/turnover/move-out-cleaning-checklist",
+  },
 };
 
 const checklist = [
@@ -53,6 +57,12 @@ const photoProof = [
 ];
 
 export default function TurnoverCleaningChecklistPage() {
+  const relatedResources = [
+    { label: "Move-in Checklist", href: "/landlord-forms/move-in-checklist", icon: "checklist" as const },
+    { label: "Turnover Guide", href: "/turnover/guide", icon: "guide" as const },
+    { label: "Turnover Timeline", href: "/turnover/how-long-should-turnover-take", icon: "chart" as const },
+  ];
+
   return (
     <main className="relative mx-auto max-w-5xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-14 md:px-6 md:py-16">
       <header className="space-y-4">
@@ -138,6 +148,8 @@ export default function TurnoverCleaningChecklistPage() {
           </div>
         </article>
       </section>
+
+      <RelatedResources resources={relatedResources} />
     </main>
   );
 }
