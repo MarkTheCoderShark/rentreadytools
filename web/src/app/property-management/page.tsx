@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: "Property Management for Landlords | Free Rental Analysis",
   description:
     "Get a free rental analysis with a data-backed rent estimate, vacancy risk check, and turnover plan. Full-service property management for landlords.",
+  alternates: {
+    canonical: "https://rentreadytools.com/property-management",
+  },
 };
 
 const services = [

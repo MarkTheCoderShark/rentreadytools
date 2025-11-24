@@ -1,10 +1,38 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { LastUpdated } from "../components/last-updated";
+import { BreadcrumbSchema } from "@/app/components/breadcrumb-schema";
 
 export const metadata: Metadata = {
-  title: "Rent Pricing Guides | Charge Market Rent | RentReadyTools",
+  title: "2025 Rent Pricing Guides | Charge Market Rent | RentReadyTools",
   description:
-    "Data-backed rent pricing guides for landlords: how to set the right rent, test price changes, and upgrade where it pays back.",
+    "2025 data-backed rent pricing guides for landlords: how to set the right rent, test price changes, and upgrade where it pays back.",
+  alternates: {
+    canonical: "https://rentreadytools.com/rent-pricing",
+  },
+  openGraph: {
+    title: "2025 Rent Pricing Guides | Charge Market Rent",
+    description:
+      "2025 data-backed rent pricing guides for landlords: how to set the right rent, test price changes, and upgrade where it pays back.",
+    url: "https://rentreadytools.com/rent-pricing",
+    siteName: "RentReadyTools",
+    type: "website",
+    images: [
+      {
+        url: "https://rentreadytools.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "RentReadyTools Rent Pricing Hub",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "2025 Rent Pricing Guides | Charge Market Rent",
+    description:
+      "2025 data-backed rent pricing guides for landlords: how to set the right rent, test price changes, and upgrade where it pays back.",
+    images: ["https://rentreadytools.com/og-image.jpg"],
+  },
 };
 
 const guides = [
@@ -34,8 +62,15 @@ const signals = [
 ];
 
 export default function RentPricingHubPage() {
+  const breadcrumbItems = [
+    { name: "Home", url: "/" },
+    { name: "Rent Pricing", url: "/rent-pricing" },
+  ];
+
   return (
-    <main className="relative mx-auto max-w-6xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-16 md:px-6 md:py-16">
+    <>
+      <BreadcrumbSchema items={breadcrumbItems} />
+      <main className="relative mx-auto max-w-6xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-16 md:px-6 md:py-16">
       <section className="overflow-hidden rounded-[1.4rem] border border-rr-border-gray bg-rr-surface-white shadow-[var(--shadow-card)]">
         <div className="relative grid gap-8 p-8 md:grid-cols-[1.1fr_0.9fr] md:p-12">
           <div className="space-y-6">
@@ -116,8 +151,9 @@ export default function RentPricingHubPage() {
           <div className="space-y-1">
             <p className="text-sm font-semibold text-rr-text-primary">Want a done-for-you rent plan?</p>
             <p className="max-w-3xl text-sm leading-relaxed text-rr-text-primary/75">
-              Send the address and current rent. We’ll reply with a range, photo fixes, and the first 3 listing tests.
+              Send the address and current rent. We'll reply with a range, photo fixes, and the first 3 listing tests.
             </p>
+            <LastUpdated date="January 2025" />
           </div>
           <Link
             href="/contact?reason=pricing&source=rent-pricing-hub"
@@ -127,7 +163,8 @@ export default function RentPricingHubPage() {
           </Link>
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }
 

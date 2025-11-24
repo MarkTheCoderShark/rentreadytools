@@ -2,16 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import RelatedResources from "@/app/components/related-resources";
 import { ArticleSchema } from "@/app/components/article-schema";
+import { LastUpdated } from "../../components/last-updated";
 
 export const metadata: Metadata = {
-  title: "How to Run Rent Comps | Landlord Playbook | RentReadyTools",
+  title: "How to Run Rent Comps (2025) | Landlord Playbook | RentReadyTools",
   description:
     "Step-by-step to run rental comps: what to filter, how to adjust for condition and amenities, and when to tighten price.",
   alternates: {
     canonical: "https://rentreadytools.com/rent-pricing/how-to-run-rent-comps",
   },
   openGraph: {
-    title: "How to Run Rent Comps | Landlord Playbook",
+    title: "How to Run Rent Comps (2025) | Landlord Playbook",
     description:
       "Step-by-step to run rental comps: what to filter, how to adjust for condition and amenities, and when to tighten price.",
     url: "https://rentreadytools.com/rent-pricing/how-to-run-rent-comps",
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "How to Run Rent Comps | Landlord Playbook",
+    title: "How to Run Rent Comps (2025) | Landlord Playbook",
     description:
       "Step-by-step to run rental comps: what to filter, how to adjust for condition and amenities, and when to tighten price.",
     images: ["https://rentreadytools.com/og-image.jpg"],
@@ -137,6 +138,9 @@ export default function RentCompsGuidePage() {
           </div>
         </article>
       </section>
+      <div className="mt-8">
+        <LastUpdated date="January 2025" />
+      </div>
 
       <RelatedResources resources={relatedResources} />
       </main>

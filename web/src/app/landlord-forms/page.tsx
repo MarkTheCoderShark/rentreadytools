@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BreadcrumbSchema } from "@/app/components/breadcrumb-schema";
 
 export const metadata: Metadata = {
   title: "Landlord Forms & Templates | Checklists & Notices | RentReadyTools",
   description:
     "Download-ready landlord templates: move-out checklist, turnover scope, showing schedule, notice examples, and readiness standards.",
+  alternates: {
+    canonical: "https://rentreadytools.com/landlord-forms",
+  },
 };
 
 const templates = [
@@ -33,8 +37,15 @@ const standards = [
 ];
 
 export default function LandlordFormsPage() {
+  const breadcrumbItems = [
+    { name: "Home", url: "/" },
+    { name: "Landlord Forms", url: "/landlord-forms" },
+  ];
+
   return (
-    <main className="relative mx-auto max-w-6xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-16 md:px-6 md:py-16">
+    <>
+      <BreadcrumbSchema items={breadcrumbItems} />
+      <main className="relative mx-auto max-w-6xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-16 md:px-6 md:py-16">
       <section className="overflow-hidden rounded-[1.4rem] border border-rr-border-gray bg-rr-surface-white shadow-[var(--shadow-card)]">
         <div className="relative grid gap-8 p-8 md:grid-cols-[1.1fr_0.9fr] md:p-12">
           <div className="space-y-6">
@@ -101,7 +112,8 @@ export default function LandlordFormsPage() {
           ))}
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }
 

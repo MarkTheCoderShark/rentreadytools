@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import { HowToSchema } from "@/app/components/howto-schema";
 
 type UpgradeOption = {
   value: string;
@@ -67,8 +68,36 @@ export default function RenovationROIPage() {
     };
   }, [inputs]);
 
+  const howToSteps = [
+    {
+      name: "Choose upgrade type",
+      text: "Select from common rental upgrades like paint, flooring, appliances, bathroom refresh, or kitchen refresh.",
+    },
+    {
+      name: "Enter project cost",
+      text: "Input the total cost of the upgrade project including labor and materials.",
+    },
+    {
+      name: "Enter expected rent increase",
+      text: "Based on your market, estimate how much monthly rent this upgrade will support. Use comps and condition adjustments as a guide.",
+    },
+    {
+      name: "Review payback timeline",
+      text: "The calculator shows monthly rent increase, annual impact, new rent level, and payback months. Target under 24 months for rental investments.",
+    },
+  ];
+
   return (
-    <main
+    <>
+      <HowToSchema
+        name="Rental Renovation ROI Calculator"
+        description="Calculate payback period and rent lift for rental property upgrades before investing."
+        url="/tools/renovation-roi"
+        steps={howToSteps}
+        totalTime="PT2M"
+        yield="ROI and payback analysis"
+      />
+      <main
       className="relative mx-auto w-full space-y-10 px-4 py-8 text-rr-text-primary md:px-6 md:py-10"
       style={{ maxWidth: "1280px" }}
     >
@@ -207,7 +236,8 @@ export default function RenovationROIPage() {
           <CTACluster />
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }
 

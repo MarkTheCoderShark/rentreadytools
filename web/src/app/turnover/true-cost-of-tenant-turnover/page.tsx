@@ -1,13 +1,37 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import RelatedResources from "@/app/components/related-resources";
-
+import { ArticleSchema } from "@/app/components/article-schema";
+import { LastUpdated } from "../../components/last-updated";
 export const metadata: Metadata = {
-  title: "The True Cost of Tenant Turnover | Missed Rent + Time | RentReadyTools",
+  title: "The True Cost of Tenant Turnover (2025) | Missed Rent + Time | RentReadyTools",
   description:
-    "See every cost in a tenant turnover: missed rent, your time, cash costs, and concessions. Use it to decide DIY vs professional management.",
+    "See every cost in a 2025 tenant turnover: missed rent, your time, cash costs, and concessions. Use it to decide DIY vs professional management.",
   alternates: {
     canonical: "https://rentreadytools.com/turnover/true-cost-of-tenant-turnover",
+  },
+  openGraph: {
+    title: "The True Cost of Tenant Turnover (2025) | Missed Rent + Time",
+    description:
+      "See every cost in a 2025 tenant turnover: missed rent, your time, cash costs, and concessions. Use it to decide DIY vs professional management.",
+    url: "https://rentreadytools.com/turnover/true-cost-of-tenant-turnover",
+    siteName: "RentReadyTools",
+    type: "article",
+    images: [
+      {
+        url: "https://rentreadytools.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "RentReadyTools - True Cost of Tenant Turnover",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "The True Cost of Tenant Turnover (2025) | Missed Rent + Time",
+    description:
+      "See every cost in a 2025 tenant turnover: missed rent, your time, cash costs, and concessions. Use it to decide DIY vs professional management.",
+    images: ["https://rentreadytools.com/og-image.jpg"],
   },
 };
 
@@ -34,7 +58,14 @@ export default function TrueCostTurnoverPage() {
   ];
 
   return (
-    <main className="relative mx-auto max-w-5xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-14 md:px-6 md:py-16">
+    <>
+      <ArticleSchema
+        title="The True Cost of Tenant Turnover"
+        description="See every cost in a 2025 tenant turnover: missed rent, your time, cash costs, and concessions. Use it to decide DIY vs professional management."
+        url="/turnover/true-cost-of-tenant-turnover"
+        author="RentReadyTools"
+      />
+      <main className="relative mx-auto max-w-5xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-14 md:px-6 md:py-16">
       <header className="space-y-4">
         <Eyebrow>Turnover guide</Eyebrow>
         <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">The true cost of tenant turnover.</h1>
@@ -89,8 +120,12 @@ export default function TrueCostTurnoverPage() {
         </div>
       </section>
 
+      <div className="mt-8">
+        <LastUpdated date="January 2025" />
+      </div>
       <RelatedResources resources={relatedResources} />
-    </main>
+      </main>
+    </>
   );
 }
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import NavBar from "./components/nav-bar";
+import { OrganizationSchema } from "./components/organization-schema";
 import "./globals.css";
 
 const inter = Inter({
@@ -18,8 +19,31 @@ const jetBrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "RentReadyTools | Landlord Command Center",
-      description:
-        "Free tools to maximize rental income, cut vacancy, and know when DIY management stops paying off.",
+  description:
+    "Free tools to maximize rental income, cut vacancy, and know when DIY management stops paying off.",
+  openGraph: {
+    title: "RentReadyTools | Landlord Command Center",
+    description:
+      "Free tools to maximize rental income, cut vacancy, and know when DIY management stops paying off.",
+    url: "https://rentreadytools.com",
+    siteName: "RentReadyTools",
+    type: "website",
+    images: [
+      {
+        url: "https://rentreadytools.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "RentReadyTools - Landlord Command Center",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RentReadyTools | Landlord Command Center",
+    description:
+      "Free tools to maximize rental income, cut vacancy, and know when DIY management stops paying off.",
+    images: ["https://rentreadytools.com/og-image.jpg"],
+  },
 };
 
 export default function RootLayout({
@@ -29,6 +53,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <OrganizationSchema />
+      </head>
       <body
         className={`${inter.variable} ${jetBrains.variable} bg-rr-surface-offwhite text-rr-text-primary antialiased`}
       >

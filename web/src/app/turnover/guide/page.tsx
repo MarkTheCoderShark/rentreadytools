@@ -10,6 +10,29 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://rentreadytools.com/turnover/guide",
   },
+  openGraph: {
+    title: "Turnover Guide | From Notice to Move-In",
+    description:
+      "A complete turnover guide for landlords: timelines, checklists, and pricing signals to keep vacancy short and move-ins smooth.",
+    url: "https://rentreadytools.com/turnover/guide",
+    siteName: "RentReadyTools",
+    type: "article",
+    images: [
+      {
+        url: "https://rentreadytools.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "RentReadyTools Turnover Guide",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Turnover Guide | From Notice to Move-In",
+    description:
+      "A complete turnover guide for landlords: timelines, checklists, and pricing signals to keep vacancy short and move-ins smooth.",
+    images: ["https://rentreadytools.com/og-image.jpg"],
+  },
 };
 
 const phases = [

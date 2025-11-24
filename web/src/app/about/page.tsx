@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "About RentReadyTools | Built for DIY Landlords",
   description:
     "RentReadyTools blends calculators, checklists, and an experienced property management team so DIY landlords can run tighter operations.",
+  alternates: {
+    canonical: "https://rentreadytools.com/about",
+  },
 };
 
 const pillars = [

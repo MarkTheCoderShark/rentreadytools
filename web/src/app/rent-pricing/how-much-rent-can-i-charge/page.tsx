@@ -2,16 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import RelatedResources from "@/app/components/related-resources";
 import { ArticleSchema } from "@/app/components/article-schema";
+import { LastUpdated } from "../../components/last-updated";
 
 export const metadata: Metadata = {
-  title: "How Much Rent Can I Charge? | Pricing Guide | RentReadyTools",
+  title: "How Much Rent Can I Charge? (2025) | Pricing Guide | RentReadyTools",
   description:
     "Step-by-step rent pricing for landlords: build a rent range with comps, condition, and response rate, then test small price moves.",
   alternates: {
     canonical: "https://rentreadytools.com/rent-pricing/how-much-rent-can-i-charge",
   },
   openGraph: {
-    title: "How Much Rent Can I Charge? | Pricing Guide",
+    title: "How Much Rent Can I Charge? (2025) | Pricing Guide",
     description:
       "Step-by-step rent pricing for landlords: build a rent range with comps, condition, and response rate, then test small price moves.",
     url: "https://rentreadytools.com/rent-pricing/how-much-rent-can-i-charge",
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "How Much Rent Can I Charge? | Pricing Guide",
+    title: "How Much Rent Can I Charge? (2025) | Pricing Guide",
     description:
       "Step-by-step rent pricing for landlords: build a rent range with comps, condition, and response rate, then test small price moves.",
     images: ["https://rentreadytools.com/og-image.jpg"],
@@ -177,6 +178,9 @@ export default function RentPricingGuidePage() {
           </Link>
         </article>
       </section>
+      <div className="mt-8">
+        <LastUpdated date="January 2025" />
+      </div>
 
       <RelatedResources resources={relatedResources} />
       </main>

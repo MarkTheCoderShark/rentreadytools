@@ -1,10 +1,38 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { LastUpdated } from "../components/last-updated";
+import { BreadcrumbSchema } from "@/app/components/breadcrumb-schema";
 
 export const metadata: Metadata = {
-  title: "Tenant Turnover Guides | Cut Vacancy Time | RentReadyTools",
+  title: "2025 Tenant Turnover Guides | Cut Vacancy Time | RentReadyTools",
   description:
-    "Practical turnover playbooks for landlords: cleaning checklists, showing cadence, and vacancy math so you can move the next tenant in faster.",
+    "2025 practical turnover playbooks for landlords: cleaning checklists, showing cadence, and vacancy math so you can move the next tenant in faster.",
+  alternates: {
+    canonical: "https://rentreadytools.com/turnover",
+  },
+  openGraph: {
+    title: "2025 Tenant Turnover Guides | Cut Vacancy Time",
+    description:
+      "2025 practical turnover playbooks for landlords: cleaning checklists, showing cadence, and vacancy math so you can move the next tenant in faster.",
+    url: "https://rentreadytools.com/turnover",
+    siteName: "RentReadyTools",
+    type: "website",
+    images: [
+      {
+        url: "https://rentreadytools.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "RentReadyTools Turnover Hub",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "2025 Tenant Turnover Guides | Cut Vacancy Time",
+    description:
+      "2025 practical turnover playbooks for landlords: cleaning checklists, showing cadence, and vacancy math so you can move the next tenant in faster.",
+    images: ["https://rentreadytools.com/og-image.jpg"],
+  },
 };
 
 const guides = [
@@ -42,8 +70,15 @@ const timeline = [
 ];
 
 export default function TurnoverHubPage() {
+  const breadcrumbItems = [
+    { name: "Home", url: "/" },
+    { name: "Turnover", url: "/turnover" },
+  ];
+
   return (
-    <main className="relative mx-auto max-w-6xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-16 md:px-6 md:py-16">
+    <>
+      <BreadcrumbSchema items={breadcrumbItems} />
+      <main className="relative mx-auto max-w-6xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-16 md:px-6 md:py-16">
       <section className="overflow-hidden rounded-[1.4rem] border border-rr-border-gray bg-rr-surface-white shadow-[var(--shadow-card)]">
         <div className="relative grid gap-8 p-8 md:grid-cols-[1.1fr_0.9fr] md:p-12">
           <div className="space-y-6">
@@ -142,7 +177,12 @@ export default function TurnoverHubPage() {
           ))}
         </div>
       </section>
-    </main>
+
+      <div className="mt-8">
+        <LastUpdated date="January 2025" />
+      </div>
+      </main>
+    </>
   );
 }
 

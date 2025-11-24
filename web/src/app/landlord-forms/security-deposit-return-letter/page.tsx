@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Security Deposit Return Letter Template | RentReadyTools",
   description:
     "Simple security deposit return letter template for landlords. Itemize deductions, timelines, and delivery proof.",
+  alternates: {
+    canonical: "https://rentreadytools.com/landlord-forms/security-deposit-return-letter",
+  },
 };
 
 const sections = [

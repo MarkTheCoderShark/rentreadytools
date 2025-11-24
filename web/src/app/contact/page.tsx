@@ -1,5 +1,15 @@
+import type { Metadata } from "next";
 import ContactForm from "../components/contact-form";
 import type { ReactNode } from "react";
+
+export const metadata: Metadata = {
+  title: "Contact RentReadyTools | Free Rental Analysis",
+  description:
+    "Get a free rental analysis and consult with the RentReadyTools team about property management services.",
+  alternates: {
+    canonical: "https://rentreadytools.com/contact",
+  },
+};
 
 export default function ContactPage({
   searchParams,

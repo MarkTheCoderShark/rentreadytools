@@ -1,5 +1,39 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import ContactForm from "./components/contact-form";
+import { LastUpdated } from "./components/last-updated";
+
+export const metadata: Metadata = {
+  title: "RentReadyTools | Landlord Command Center",
+  description:
+    "Free tools to maximize rental income, cut vacancy, and know when DIY management stops paying off.",
+  alternates: {
+    canonical: "https://rentreadytools.com",
+  },
+  openGraph: {
+    title: "RentReadyTools | Landlord Command Center",
+    description:
+      "Free tools to maximize rental income, cut vacancy, and know when DIY management stops paying off.",
+    url: "https://rentreadytools.com",
+    siteName: "RentReadyTools",
+    type: "website",
+    images: [
+      {
+        url: "https://rentreadytools.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "RentReadyTools - Landlord Command Center",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RentReadyTools | Landlord Command Center",
+    description:
+      "Free tools to maximize rental income, cut vacancy, and know when DIY management stops paying off.",
+    images: ["https://rentreadytools.com/og-image.jpg"],
+  },
+};
 
 const steps = [
   {
@@ -241,7 +275,7 @@ export default function Home() {
               <StatCard
                 title="Avg vacancy trimmed"
                 value="6–10 days"
-                note="Based on typical single-family turnovers."
+                note="2024–2025 benchmark for single-family turnovers."
                 tone="dark"
               />
               <StatCard

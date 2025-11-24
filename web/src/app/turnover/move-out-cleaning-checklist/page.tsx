@@ -1,13 +1,37 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import RelatedResources from "@/app/components/related-resources";
-
+import { ArticleSchema } from "@/app/components/article-schema";
+import { LastUpdated } from "../../components/last-updated";
 export const metadata: Metadata = {
-  title: "Move-Out Cleaning Checklist | Turnover Ready Units | RentReadyTools",
+  title: "2025 Move-Out Cleaning Checklist | Turnover Ready Units | RentReadyTools",
   description:
-    "A practical move-out cleaning checklist to speed tenant turnover: room-by-room tasks, supplies, and photo proof list.",
+    "A practical 2025 move-out cleaning checklist to speed tenant turnover: room-by-room tasks, supplies, and photo proof list.",
   alternates: {
     canonical: "https://rentreadytools.com/turnover/move-out-cleaning-checklist",
+  },
+  openGraph: {
+    title: "2025 Move-Out Cleaning Checklist | Turnover Ready Units",
+    description:
+      "A practical 2025 move-out cleaning checklist to speed tenant turnover: room-by-room tasks, supplies, and photo proof list.",
+    url: "https://rentreadytools.com/turnover/move-out-cleaning-checklist",
+    siteName: "RentReadyTools",
+    type: "article",
+    images: [
+      {
+        url: "https://rentreadytools.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "RentReadyTools - Move-Out Cleaning Checklist",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "2025 Move-Out Cleaning Checklist | Turnover Ready Units",
+    description:
+      "A practical 2025 move-out cleaning checklist to speed tenant turnover: room-by-room tasks, supplies, and photo proof list.",
+    images: ["https://rentreadytools.com/og-image.jpg"],
   },
 };
 
@@ -64,7 +88,14 @@ export default function TurnoverCleaningChecklistPage() {
   ];
 
   return (
-    <main className="relative mx-auto max-w-5xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-14 md:px-6 md:py-16">
+    <>
+      <ArticleSchema
+        title="Move-Out Cleaning Checklist for Landlords"
+        description="A practical 2025 move-out cleaning checklist to speed tenant turnover: room-by-room tasks, supplies, and photo proof list."
+        url="/turnover/move-out-cleaning-checklist"
+        author="RentReadyTools"
+      />
+      <main className="relative mx-auto max-w-5xl space-y-12 px-4 py-10 text-rr-text-primary md:space-y-14 md:px-6 md:py-16">
       <header className="space-y-4">
         <Eyebrow>Turnover guide</Eyebrow>
         <h1 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
@@ -149,8 +180,12 @@ export default function TurnoverCleaningChecklistPage() {
         </article>
       </section>
 
+      <div className="mt-8">
+        <LastUpdated date="January 2025" />
+      </div>
       <RelatedResources resources={relatedResources} />
-    </main>
+      </main>
+    </>
   );
 }
 

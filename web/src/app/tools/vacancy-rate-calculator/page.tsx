@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
+import { HowToSchema } from "@/app/components/howto-schema";
 
 type FAQ = { question: string; answer: string };
 
@@ -67,8 +68,36 @@ export default function VacancyCostPage() {
     };
   }, [inputs]);
 
+  const howToSteps = [
+    {
+      name: "Enter monthly rent",
+      text: "Input the monthly rent amount to calculate daily loss for each vacant day.",
+    },
+    {
+      name: "Enter days vacant",
+      text: "Enter the number of days the unit is typically vacant between tenants.",
+    },
+    {
+      name: "Add time and hard costs",
+      text: "Include your hourly rate and hours spent on showings, cleaning, and coordination. Add any cash costs for repairs, cleaning services, or concessions.",
+    },
+    {
+      name: "Review total vacancy cost",
+      text: "The calculator shows total cost, cost per day, and percentage of monthly rent lost to vacancy.",
+    },
+  ];
+
   return (
-    <main
+    <>
+      <HowToSchema
+        name="Vacancy Cost Calculator"
+        description="Calculate the true cost of vacancy including missed rent, your time, and turnover expenses."
+        url="/tools/vacancy-rate-calculator"
+        steps={howToSteps}
+        totalTime="PT3M"
+        yield="Vacancy cost analysis"
+      />
+      <main
       className="relative mx-auto w-full space-y-10 px-4 py-8 text-rr-text-primary md:px-6 md:py-10"
       style={{ maxWidth: "1280px" }}
     >
@@ -284,7 +313,8 @@ export default function VacancyCostPage() {
           </div>
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }
 

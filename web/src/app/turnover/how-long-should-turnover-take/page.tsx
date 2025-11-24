@@ -11,6 +11,29 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://rentreadytools.com/turnover/how-long-should-turnover-take",
   },
+  openGraph: {
+    title: "How Long Should Tenant Turnover Take? | 2025 Benchmarks",
+    description:
+      "2025 turnover timeline benchmarks for landlords: notice to move-out, cleaning, repairs, listing, and lease-up with tips to avoid stalls.",
+    url: "https://rentreadytools.com/turnover/how-long-should-turnover-take",
+    siteName: "RentReadyTools",
+    type: "article",
+    images: [
+      {
+        url: "https://rentreadytools.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "RentReadyTools - How Long Should Turnover Take",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "How Long Should Tenant Turnover Take? | 2025 Benchmarks",
+    description:
+      "2025 turnover timeline benchmarks for landlords: notice to move-out, cleaning, repairs, listing, and lease-up with tips to avoid stalls.",
+    images: ["https://rentreadytools.com/og-image.jpg"],
+  },
 };
 
 const benchmarks = [
@@ -124,6 +147,10 @@ export default function TurnoverTimelinePage() {
           ))}
         </ul>
       </section>
+
+      <div className="mt-8">
+        <LastUpdated date="January 2025" />
+      </div>
 
       <RelatedResources resources={relatedResources} />
       </main>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import { HowToSchema } from "@/app/components/howto-schema";
 
 type PropertyType = "house" | "condo" | "duplex" | "apartment";
 type Inputs = {
@@ -192,8 +193,36 @@ export default function RentPricingPage() {
     apiEstimate.status === "ready" &&
     ((apiEstimate.data?.medianRent ?? 0) > 0 || (apiEstimate.data?.currentRentZestimate ?? 0) > 0);
 
+  const howToSteps = [
+    {
+      name: "Enter property details",
+      text: "Start with your address, property type (house, condo, duplex, apartment), number of bedrooms, bathrooms, and square footage.",
+    },
+    {
+      name: "Adjust for condition",
+      text: "Use the condition slider (Needs work to Excellent) and mark if you have parking/assigned parking to account for market adjustments.",
+    },
+    {
+      name: "Enter current rent",
+      text: "Input your current rent amount to see if you are underpricing, overpricing, or within market range for your property.",
+    },
+    {
+      name: "Review the estimated range",
+      text: "The calculator provides a recommended rent range based on comparable properties and your unit condition. Use this for lease renewals and new listings.",
+    },
+  ];
+
   return (
-    <main
+    <>
+      <HowToSchema
+        name="Rent Price Calculator"
+        description="Get a data-backed rent range by entering your property details, condition, and current rent."
+        url="/tools/rent-estimate-calculator"
+        steps={howToSteps}
+        totalTime="PT2M"
+        yield="Rent pricing range"
+      />
+      <main
       className="relative mx-auto w-full space-y-10 px-4 py-6 text-rr-text-primary md:px-6 md:py-10"
       style={{ maxWidth: "1280px" }}
     >
@@ -420,7 +449,8 @@ export default function RentPricingPage() {
           <CTACluster />
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }
 

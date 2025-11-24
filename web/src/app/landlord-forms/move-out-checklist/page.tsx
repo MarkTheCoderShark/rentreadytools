@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Move-Out Cleaning Checklist for Landlords | RentReadyTools",
   description:
     "Room-by-room move-out cleaning checklist with supply list, photo angles, and standards that protect deposits and speed turnover.",
+  alternates: {
+    canonical: "https://rentreadytools.com/landlord-forms/move-out-checklist",
+  },
 };
 
 const rooms = [

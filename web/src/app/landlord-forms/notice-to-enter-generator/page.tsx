@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Notice to Enter Generator | Landlord Template | RentReadyTools",
   description:
     "Generate a simple notice to enter for repairs or inspections. Editable template with required details and timing considerations.",
+  alternates: {
+    canonical: "https://rentreadytools.com/landlord-forms/notice-to-enter-generator",
+  },
 };
 
 const fields = [

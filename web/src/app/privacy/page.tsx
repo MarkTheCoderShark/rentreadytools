@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Privacy Policy | RentReadyTools",
   description: "How RentReadyTools collects, uses, and protects your information.",
+  alternates: {
+    canonical: "https://rentreadytools.com/privacy",
+  },
 };
 
 export default function PrivacyPage() {

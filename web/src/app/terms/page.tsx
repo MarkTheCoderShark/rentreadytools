@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Terms of Service | RentReadyTools",
   description: "Terms and conditions for using RentReadyTools and requesting services.",
+  alternates: {
+    canonical: "https://rentreadytools.com/terms",
+  },
 };
 
 export default function TermsPage() {

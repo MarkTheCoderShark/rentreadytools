@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Move-In Checklist for Landlords | RentReadyTools",
   description:
     "Move-in checklist template: safety, systems, and documentation steps to start the tenancy cleanly and protect deposits.",
+  alternates: {
+    canonical: "https://rentreadytools.com/landlord-forms/move-in-checklist",
+  },
 };
 
 const items = [
