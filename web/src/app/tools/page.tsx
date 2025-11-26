@@ -4,16 +4,16 @@ import type { ReactNode } from "react";
 import { BreadcrumbSchema } from "@/app/components/breadcrumb-schema";
 
 export const metadata: Metadata = {
-  title: "Landlord Tools | Rent Calculator, Vacancy Cost & ROI",
+  title: "Landlord Tools | Rent Calculator, Cap Rate & ROI Calculators",
   description:
-    "Free landlord tools including rent price calculator, vacancy cost calculator, move-in checklist, and rental renovation ROI calculator.",
+    "Free landlord tools: rent price calculator, cap rate calculator, vacancy cost calculator, move-in checklist, and renovation ROI calculator.",
   alternates: {
     canonical: "https://rentreadytools.com/tools",
   },
   openGraph: {
-    title: "Landlord Tools | Rent Calculator, Vacancy Cost & ROI",
+    title: "Landlord Tools | Rent Calculator, Cap Rate & ROI Calculators",
     description:
-      "Free landlord tools including rent price calculator, vacancy cost calculator, move-in checklist, and rental renovation ROI calculator.",
+      "Free landlord tools: rent price calculator, cap rate calculator, vacancy cost calculator, move-in checklist, and renovation ROI calculator.",
     url: "https://rentreadytools.com/tools",
     siteName: "RentReadyTools",
     type: "website",
@@ -28,9 +28,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Landlord Tools | Rent Calculator, Vacancy Cost & ROI",
+    title: "Landlord Tools | Rent Calculator, Cap Rate & ROI Calculators",
     description:
-      "Free landlord tools including rent price calculator, vacancy cost calculator, move-in checklist, and rental renovation ROI calculator.",
+      "Free landlord tools: rent price calculator, cap rate calculator, vacancy cost calculator, move-in checklist, and renovation ROI calculator.",
     images: ["https://rentreadytools.com/og-image.jpg"],
   },
 };
@@ -42,6 +42,12 @@ const tools = [
     href: "/tools/rent-estimate-calculator",
     tag: "Flagship tool",
     tone: "accent" as const,
+  },
+  {
+    name: "Cap Rate Calculator",
+    description: "Calculate capitalization rate to compare investment returns and analyze deals.",
+    href: "/tools/cap-rate-calculator",
+    tag: "New",
   },
   {
     name: "Vacancy Cost Calculator",

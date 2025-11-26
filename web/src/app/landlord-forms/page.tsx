@@ -13,19 +13,34 @@ export const metadata: Metadata = {
 
 const templates = [
   {
+    title: "Rent increase letter",
+    summary: "Notify tenants of rent changes with proper notice periods and professional wording.",
+    href: "/landlord-forms/rent-increase-letter",
+  },
+  {
+    title: "Late rent notice",
+    summary: "Templates from friendly reminders to formal pay-or-quit notices for late payments.",
+    href: "/landlord-forms/late-rent-notice",
+  },
+  {
     title: "Move-out checklist",
     summary: "Room-by-room cleaning standards, photo angles, and what counts as normal wear.",
     href: "/landlord-forms/move-out-checklist",
   },
   {
-    title: "Turnover scope template",
-    summary: "Organize cleaning, paint, hardware swaps, and small repairs with owners and vendors.",
-    href: "/turnover/move-out-cleaning-checklist",
+    title: "Security deposit return",
+    summary: "Document deductions and return deposits properly to avoid disputes.",
+    href: "/landlord-forms/security-deposit-return-letter",
   },
   {
-    title: "Showing schedule planner",
-    summary: "Batch showings, set pre-screening questions, and send confirmations fast.",
-    href: "/turnover/how-long-should-turnover-take",
+    title: "Notice to enter",
+    summary: "Compliant notice for repairs, inspections, or showings with proper timing.",
+    href: "/landlord-forms/notice-to-enter-generator",
+  },
+  {
+    title: "Move-in checklist",
+    summary: "Document property condition at move-in to protect your security deposit claims.",
+    href: "/landlord-forms/move-in-checklist",
   },
 ];
 

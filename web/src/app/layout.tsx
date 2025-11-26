@@ -89,20 +89,20 @@ function Footer() {
           links={[
             { label: "Rent Price Calculator", href: "/tools/rent-estimate-calculator" },
             { label: "Vacancy Cost Calculator", href: "/tools/vacancy-rate-calculator" },
+            { label: "Cap Rate Calculator", href: "/tools/cap-rate-calculator" },
             { label: "Move-In Readiness Checklist", href: "/tools/move-in-checklist" },
-            { label: "Rental Renovation ROI Calculator", href: "/tools/renovation-roi" },
+            { label: "Renovation ROI Calculator", href: "/tools/renovation-roi" },
           ]}
         />
         <FooterColumn
           title="Guides & Forms"
           links={[
             { label: "Turnover hub", href: "/turnover" },
-            { label: "Turnover guide", href: "/turnover/guide" },
             { label: "Rent pricing hub", href: "/rent-pricing" },
+            { label: "Tenant screening", href: "/tenant-screening" },
             { label: "Landlord forms", href: "/landlord-forms" },
-            { label: "Notice to enter", href: "/landlord-forms/notice-to-enter-generator" },
-            { label: "Move-out checklist", href: "/landlord-forms/move-out-checklist" },
-            { label: "Move-in checklist", href: "/landlord-forms/move-in-checklist" },
+            { label: "Rent increase letter", href: "/landlord-forms/rent-increase-letter" },
+            { label: "Late rent notice", href: "/landlord-forms/late-rent-notice" },
           ]}
         />
         <FooterColumn

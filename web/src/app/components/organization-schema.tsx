@@ -36,8 +36,9 @@ export function OrganizationSchema({
     }),
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+1-XXX-XXX-XXXX',
+      email: 'hello@rentreadytools.com',
       contactType: 'customer service',
+      availableLanguage: 'English',
     },
   };
 
