@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 import { HowToSchema } from "@/app/components/howto-schema";
+import { SaveResultsModal } from "@/app/components/save-results-modal";
 
 type FAQ = { question: string; answer: string };
 
@@ -37,6 +38,8 @@ export default function VacancyCostPage() {
     rentConcession: 0,
   });
   const [showRefine, setShowRefine] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [hasTracked, setHasTracked] = useState(false);
   const refineRef = useRef<HTMLDivElement | null>(null);
 
   const results = useMemo(() => {
@@ -97,6 +100,15 @@ export default function VacancyCostPage() {
         totalTime="PT3M"
         yield="Vacancy cost analysis"
       />
+
+      {/* Track usage when user changes inputs */}
+      <TrackingEffect
+        hasTracked={hasTracked}
+        setHasTracked={setHasTracked}
+        inputs={inputs}
+        results={results}
+      />
+
       <main
       className="relative mx-auto w-full space-y-10 px-4 py-8 text-rr-text-primary md:px-6 md:py-10"
       style={{ maxWidth: "1280px" }}
@@ -310,10 +322,42 @@ export default function VacancyCostPage() {
                 <GhostButton href="/property-management">Talk to a property manager</GhostButton>
               </div>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setShowSaveModal(true)}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-rr-accent-darkteal bg-rr-accent-darkteal/5 px-4 py-2.5 text-sm font-semibold text-rr-accent-darkteal transition hover:bg-rr-accent-darkteal/10"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Email me this analysis
+            </button>
           </div>
         </div>
       </section>
       </main>
+
+      <SaveResultsModal
+        isOpen={showSaveModal}
+        onClose={() => setShowSaveModal(false)}
+        tool="vacancy-rate-calculator"
+        inputs={{
+          monthlyRent: inputs.monthlyRent,
+          daysVacant: inputs.daysVacant,
+          hourlyValue: inputs.hourlyValue,
+          hoursSpent: inputs.hoursSpent,
+          cashTurnoverCosts: inputs.cashTurnoverCosts,
+        }}
+        results={{
+          totalCost: results.totalCost,
+          vacancyLoss: results.vacancyLoss,
+          timeCost: results.timeCost,
+          pctOfMonth: results.pctOfMonth,
+        }}
+        title="Save your vacancy analysis"
+        description="Get this cost breakdown emailed to you with tips to reduce vacancy."
+      />
     </>
   );
 }
@@ -523,4 +567,43 @@ function focusRefine(ref: RefObject<HTMLDivElement | null>, setOpen: (state: boo
   if (ref.current) {
     ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+}
+
+function TrackingEffect({
+  hasTracked,
+  setHasTracked,
+  inputs,
+  results,
+}: {
+  hasTracked: boolean;
+  setHasTracked: (v: boolean) => void;
+  inputs: { monthlyRent: number; daysVacant: number; hourlyValue: number; hoursSpent: number };
+  results: { totalCost: number; vacancyLoss: number; timeCost: number };
+}) {
+  useEffect(() => {
+    if (hasTracked) return;
+    if (inputs.monthlyRent !== 2100 || inputs.daysVacant !== 12) {
+      setHasTracked(true);
+      fetch("/api/track-tool", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tool: "vacancy-rate-calculator",
+          inputs: {
+            monthlyRent: inputs.monthlyRent,
+            daysVacant: inputs.daysVacant,
+            hourlyValue: inputs.hourlyValue,
+            hoursSpent: inputs.hoursSpent,
+          },
+          results: {
+            totalCost: results.totalCost,
+            vacancyLoss: results.vacancyLoss,
+            timeCost: results.timeCost,
+          },
+        }),
+      }).catch(() => {});
+    }
+  }, [inputs, results, hasTracked, setHasTracked]);
+
+  return null;
 }

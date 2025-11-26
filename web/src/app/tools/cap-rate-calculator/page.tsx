@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { HowToSchema } from "@/app/components/howto-schema";
+import { SaveResultsModal } from "@/app/components/save-results-modal";
 
 type FAQ = { question: string; answer: string };
 
@@ -57,6 +58,8 @@ export default function CapRateCalculatorPage() {
   });
 
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [hasTracked, setHasTracked] = useState(false);
 
   const results = useMemo(() => {
     const propertyValue = Math.max(Number(inputs.propertyValue) || 0, 1);
@@ -130,6 +133,15 @@ export default function CapRateCalculatorPage() {
         totalTime="PT3M"
         yield="Cap rate analysis with NOI and investment metrics"
       />
+
+      {/* Track usage when user changes inputs */}
+      <TrackingEffect
+        hasTracked={hasTracked}
+        setHasTracked={setHasTracked}
+        inputs={inputs}
+        results={results}
+      />
+
       <main
         className="relative mx-auto w-full space-y-10 px-4 py-8 text-rr-text-primary md:px-6 md:py-10"
         style={{ maxWidth: "1280px" }}
@@ -348,6 +360,17 @@ export default function CapRateCalculatorPage() {
                   <GhostButton href="/property-management">Talk to an expert</GhostButton>
                 </div>
               </div>
+
+              <button
+                type="button"
+                onClick={() => setShowSaveModal(true)}
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-rr-accent-darkteal bg-rr-accent-darkteal/5 px-4 py-2.5 text-sm font-semibold text-rr-accent-darkteal transition hover:bg-rr-accent-darkteal/10"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Email me this analysis
+              </button>
             </div>
 
             <div className="rounded-[12px] border border-rr-border-gray bg-rr-surface-offwhite p-5 shadow-[var(--shadow-soft)]">
@@ -373,6 +396,26 @@ export default function CapRateCalculatorPage() {
           </div>
         </section>
       </main>
+
+      <SaveResultsModal
+        isOpen={showSaveModal}
+        onClose={() => setShowSaveModal(false)}
+        tool="cap-rate-calculator"
+        inputs={{
+          propertyValue: inputs.propertyValue,
+          monthlyRent: inputs.monthlyRent,
+          vacancyRate: inputs.vacancyRate,
+          totalExpenses: inputs.propertyTaxes + inputs.insurance + inputs.maintenance + inputs.propertyManagement,
+        }}
+        results={{
+          capRate: results.capRate.toFixed(2) + "%",
+          noi: results.noi,
+          grossAnnualRent: results.grossAnnualRent,
+          grm: results.grm.toFixed(1),
+        }}
+        title="Save your cap rate analysis"
+        description="Get this investment analysis emailed to you with market benchmarks."
+      />
     </>
   );
 }
@@ -531,4 +574,40 @@ function GhostButton({ href, children }: { href: string; children: ReactNode }) 
       {children}
     </Link>
   );
+}
+
+function TrackingEffect({
+  hasTracked,
+  setHasTracked,
+  inputs,
+  results,
+}: {
+  hasTracked: boolean;
+  setHasTracked: (v: boolean) => void;
+  inputs: { propertyValue: number; monthlyRent: number };
+  results: { capRate: number; noi: number };
+}) {
+  useEffect(() => {
+    if (hasTracked) return;
+    if (inputs.propertyValue !== 350000 || inputs.monthlyRent !== 2200) {
+      setHasTracked(true);
+      fetch("/api/track-tool", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tool: "cap-rate-calculator",
+          inputs: {
+            propertyValue: inputs.propertyValue,
+            monthlyRent: inputs.monthlyRent,
+          },
+          results: {
+            capRate: results.capRate,
+            noi: results.noi,
+          },
+        }),
+      }).catch(() => {});
+    }
+  }, [inputs, results, hasTracked, setHasTracked]);
+
+  return null;
 }

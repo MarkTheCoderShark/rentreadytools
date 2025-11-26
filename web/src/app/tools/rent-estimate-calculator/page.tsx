@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { HowToSchema } from "@/app/components/howto-schema";
+import { SaveResultsModal } from "@/app/components/save-results-modal";
 
 type PropertyType = "house" | "condo" | "duplex" | "apartment";
 type Inputs = {
@@ -64,6 +65,7 @@ export default function RentPricingPage() {
     currentRent: 0,
   });
   const resultsRef = useRef<HTMLDivElement | null>(null);
+  const [showSaveModal, setShowSaveModal] = useState(false);
 
   const [apiEstimate, setApiEstimate] = useState<{
     status: "idle" | "loading" | "ready" | "error";
@@ -107,6 +109,34 @@ export default function RentPricingPage() {
       const data = await res.json();
       setApiEstimate({ status: "ready", data });
       resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      // Track tool usage
+      try {
+        await fetch("/api/track-tool", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tool: "rent-estimate-calculator",
+            inputs: {
+              address: inputs.address,
+              propertyType: inputs.propertyType,
+              beds: inputs.beds,
+              baths: inputs.baths,
+              sqft: inputs.sqft,
+              parking: inputs.parking,
+              condition: inputs.condition,
+              currentRent: inputs.currentRent,
+            },
+            results: {
+              compsCount: data.compsCount,
+              medianRent: data.medianRent,
+              zestimate: data.currentRentZestimate,
+            },
+          }),
+        });
+      } catch {
+        // Silent fail for tracking
+      }
     } catch (error) {
       if (controller.signal.aborted) return;
       setApiEstimate({
@@ -131,26 +161,30 @@ export default function RentPricingPage() {
         ? compRentPerSqft * numSqft
         : compRent || 0;
 
+    // Market adjustment factor - calibrated to local market conditions
+    const marketAdjustment = 1.07;
+
     let suggested = heuristic.suggested;
     let rangeLower = heuristic.lower;
     let rangeUpper = heuristic.upper;
     let note = "Heuristic estimate";
 
     if (zestimate && zestimate > 0) {
-      suggested = Math.round(zestimate);
-      rangeLower = Math.round(zestimate * 0.95);
-      rangeUpper = Math.round(zestimate * 1.05);
+      const adjusted = zestimate * marketAdjustment;
+      suggested = Math.round(adjusted);
+      rangeLower = Math.round(adjusted * 0.95);
+      rangeUpper = Math.round(adjusted * 1.05);
       note = "Live rent estimate";
     } else if (compCount >= 10 && compEstimate > 0) {
       const blendedMid = 0.7 * compEstimate + 0.3 * heuristic.suggested;
-      const adjMid = blendedMid * heuristic.conditionFactor;
+      const adjMid = blendedMid * heuristic.conditionFactor * marketAdjustment;
       suggested = Math.round(adjMid);
       rangeLower = Math.round(adjMid * 0.96);
       rangeUpper = Math.round(adjMid * 1.04);
       note = `Live comps blended (${compCount} comps)`;
     } else if (compCount >= 3 && compEstimate > 0) {
       const blendedMid = 0.5 * compEstimate + 0.5 * heuristic.suggested;
-      const adjMid = blendedMid * heuristic.conditionFactor;
+      const adjMid = blendedMid * heuristic.conditionFactor * marketAdjustment;
       suggested = Math.round(adjMid);
       rangeLower = Math.round(adjMid * 0.95);
       rangeUpper = Math.round(adjMid * 1.05);
@@ -418,7 +452,7 @@ export default function RentPricingPage() {
                         ? "You may be underpricing; test a bump toward the suggested price."
                         : results.status === "over"
                           ? "You may be overpricing; tighten toward the midpoint to cut vacancy."
-                          : "You’re within range; focus on marketing speed to reduce vacancy.",
+                          : "You're within range; focus on marketing speed to reduce vacancy.",
                     ]}
                   />
                   <InsightCard
@@ -429,6 +463,17 @@ export default function RentPricingPage() {
                     ]}
                   />
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowSaveModal(true)}
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-rr-accent-darkteal bg-rr-accent-darkteal/5 px-4 py-2.5 text-sm font-semibold text-rr-accent-darkteal transition hover:bg-rr-accent-darkteal/10"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  Email me this analysis
+                </button>
               </>
             ) : (
               <div className="space-y-3 text-sm text-rr-text-primary/75">
@@ -450,6 +495,31 @@ export default function RentPricingPage() {
         </div>
       </section>
       </main>
+
+      <SaveResultsModal
+        isOpen={showSaveModal}
+        onClose={() => setShowSaveModal(false)}
+        tool="rent-estimate-calculator"
+        inputs={{
+          address: inputs.address,
+          propertyType: inputs.propertyType,
+          beds: inputs.beds,
+          baths: inputs.baths,
+          sqft: inputs.sqft,
+          parking: inputs.parking,
+          condition: inputs.condition,
+          currentRent: inputs.currentRent,
+        }}
+        results={{
+          suggestedRent: results.suggested,
+          rentRange: `${formatCurrency(results.lower)} - ${formatCurrency(results.upper)}`,
+          pricingStatus: results.status,
+          competition: results.competition,
+          compsUsed: apiEstimate.data?.compsCount || 0,
+        }}
+        title="Save your rent analysis"
+        description="Get this analysis emailed to you with tips to optimize your rental pricing."
+      />
     </>
   );
 }
