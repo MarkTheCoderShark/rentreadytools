@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 interface ToolUsageEntry {
@@ -33,6 +33,20 @@ const TOOL_NAMES: Record<string, string> = {
 };
 
 export default function AnalyticsDashboard() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-rr-surface-offwhite">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-rr-accent-darkteal border-t-transparent" />
+        </div>
+      }
+    >
+      <AnalyticsDashboardContent />
+    </Suspense>
+  );
+}
+
+function AnalyticsDashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
