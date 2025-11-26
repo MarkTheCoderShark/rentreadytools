@@ -237,7 +237,7 @@ export default function AnalyticsDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-rr-border-gray">
-                    {data.entries.slice(0, 100).map((entry) => (
+                    {(data?.entries ?? []).slice(0, 100).map((entry) => (
                       <tr key={entry.id} className={entry.email ? "bg-rr-accent-gold/5" : ""}>
                         <td className="whitespace-nowrap px-4 py-3 text-rr-text-primary/70">
                           {new Date(entry.timestamp).toLocaleString()}
