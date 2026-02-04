@@ -28,6 +28,11 @@ const templates = [
     href: "/landlord-forms/move-out-checklist",
   },
   {
+    title: "Rental inspection checklist",
+    summary: "Move-in, routine, and move-out inspection templates with scheduling tips.",
+    href: "/landlord-forms/rental-inspection-checklist",
+  },
+  {
     title: "Security deposit return",
     summary: "Document deductions and return deposits properly to avoid disputes.",
     href: "/landlord-forms/security-deposit-return-letter",

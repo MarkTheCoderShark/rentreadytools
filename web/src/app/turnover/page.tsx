@@ -47,6 +47,11 @@ const guides = [
     href: "/turnover/move-out-cleaning-checklist",
   },
   {
+    title: "Make-ready scope of work",
+    summary: "Room-by-room scope template, budget tiers, and vendor sequencing plan.",
+    href: "/turnover/make-ready-scope-of-work",
+  },
+  {
     title: "Vacancy cost calculator",
     summary: "See the daily cost of an empty unit, including your time and lost rent.",
     href: "/tools/vacancy-rate-calculator",

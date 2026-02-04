@@ -47,6 +47,11 @@ const guides = [
     href: "/rent-pricing/rental-upgrades-that-pay-off",
   },
   {
+    title: "Rent increase strategy",
+    summary: "Timing, pricing logic, and communication to raise rent without churn.",
+    href: "/rent-pricing/rent-increase-strategy",
+  },
+  {
     title: "Rent Price Calculator",
     summary: "Blend comps and condition to get a range in under a minute.",
     href: "/tools/rent-estimate-calculator",
@@ -151,7 +156,7 @@ export default function RentPricingHubPage() {
           <div className="space-y-1">
             <p className="text-sm font-semibold text-rr-text-primary">Want a done-for-you rent plan?</p>
             <p className="max-w-3xl text-sm leading-relaxed text-rr-text-primary/75">
-              Send the address and current rent. We'll reply with a range, photo fixes, and the first 3 listing tests.
+              Send the address and current rent. We&apos;ll reply with a range, photo fixes, and the first 3 listing tests.
             </p>
             <LastUpdated date="January 2025" />
           </div>
