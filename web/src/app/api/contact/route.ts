@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const DEFAULT_FROM = "noreply@notyoungfashion.com";
 const DEFAULT_TO = "markthecodershark@gmail.com";
 
@@ -25,6 +24,9 @@ export async function POST(request: Request) {
     if (!process.env.RESEND_API_KEY) {
       return NextResponse.json({ error: "Email service not configured." }, { status: 500 });
     }
+
+    // Instantiate lazily so `next build` doesn't require RESEND_API_KEY.
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     const from = process.env.RESEND_FROM || DEFAULT_FROM;
     const to = process.env.RESEND_TO || DEFAULT_TO;
